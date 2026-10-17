@@ -62,13 +62,22 @@ type Result struct {
 	RedirectURL string
 }
 
-func storeReplyCookie(t Transport, reply geoReply) (*http.Cookie, error) {
+// storeReplyCookie stores the reply's cookie; one without a Domain belongs
+// to pageURL's domain, replacing the cookie the block was issued for.
+func storeReplyCookie(t Transport, reply geoReply, pageURL string) (*http.Cookie, error) {
 	if reply.Cookie == "" {
 		return nil, fmt.Errorf("flow: reply carried no cookie")
 	}
 	cookie, err := http.ParseSetCookie(reply.Cookie)
 	if err != nil {
 		return nil, fmt.Errorf("flow: parse reply cookie: %w", err)
+	}
+	if cookie.Domain == "" {
+		u, err := url.Parse(pageURL)
+		if err != nil || u.Hostname() == "" {
+			return nil, fmt.Errorf("flow: reply cookie has no domain and %q has no host", pageURL)
+		}
+		cookie.Domain = "." + strings.TrimPrefix(u.Hostname(), "www.")
 	}
 	t.SetCookie(cookie.Domain, cookie.Name, cookie.Value)
 	return cookie, nil
@@ -119,7 +128,7 @@ func solveInterstitialAt(ctx context.Context, t Transport, s *datadome.Session, 
 	if err := json.Unmarshal([]byte(post.Body), &reply); err != nil {
 		return nil, fmt.Errorf("flow: interstitial reply %d: %s", post.Status, truncate(post.Body))
 	}
-	cookie, err := storeReplyCookie(t, reply)
+	cookie, err := storeReplyCookie(t, reply, pageURL)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +176,7 @@ func solveSliderAt(ctx context.Context, t Transport, s *datadome.Session, pageUR
 	if err := json.Unmarshal([]byte(check.Body), &reply); err != nil {
 		return nil, fmt.Errorf("flow: captcha check reply %d: %s", check.Status, truncate(check.Body))
 	}
-	cookie, err := storeReplyCookie(t, reply)
+	cookie, err := storeReplyCookie(t, reply, pageURL)
 	if err != nil {
 		return nil, err
 	}
