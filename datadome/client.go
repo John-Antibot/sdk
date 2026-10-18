@@ -3,6 +3,7 @@ package datadome
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
@@ -39,6 +40,9 @@ type Config struct {
 	// Defaults are merged into every Session the client creates.
 	Defaults Session
 }
+
+// compressAbove is the request body size from which the SDK gzips it (about 2.5x smaller).
+const compressAbove = 32 << 10
 
 // Client sends generator requests and is safe for concurrent use.
 type Client struct {
@@ -91,11 +95,22 @@ func (c *Client) post(ctx context.Context, route string, payload any, out any) e
 	if err != nil {
 		return fmt.Errorf("datadome: marshal request: %w", err)
 	}
+	compressed := false
+	if len(body) >= compressAbove { // interstitial/slider bodies carry the ~570 KB script
+		var buf bytes.Buffer
+		zw, _ := gzip.NewWriterLevel(&buf, gzip.BestSpeed)
+		if _, err := zw.Write(body); err == nil && zw.Close() == nil {
+			body, compressed = buf.Bytes(), true
+		}
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.endpoint+route, bytes.NewReader(body))
 	if err != nil {
 		return fmt.Errorf("datadome: build request: %w", err)
 	}
 	req.Header.Set("content-type", "application/json")
+	if compressed {
+		req.Header.Set("content-encoding", "gzip")
+	}
 	if c.apiKey != "" {
 		req.Header.Set("x-api-key", c.apiKey)
 	}
