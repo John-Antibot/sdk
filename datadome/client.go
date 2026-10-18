@@ -29,6 +29,9 @@ type Config struct {
 	Endpoint string
 	// APIKey is sent as the x-api-key header when set.
 	APIKey string
+	// OrgKey is sent as the x-org-key header when set: software distributed under
+	// an organization sends its key next to each user's own APIKey.
+	OrgKey string
 	// Timeout is the per-call deadline; zero or negative means 60 seconds.
 	Timeout time.Duration
 	// HTTPClient is the generator transport; defaults to a plain *http.Client.
@@ -42,6 +45,7 @@ type Client struct {
 	ctx      context.Context
 	endpoint string
 	apiKey   string
+	orgKey   string
 	timeout  time.Duration
 	http     HTTPDoer
 	defaults Session
@@ -62,7 +66,7 @@ func New(config Config) (*Client, error) {
 		httpClient = &http.Client{Transport: &http.Transport{}}
 	}
 	return &Client{
-		ctx: context.Background(), endpoint: endpoint, apiKey: config.APIKey,
+		ctx: context.Background(), endpoint: endpoint, apiKey: config.APIKey, orgKey: config.OrgKey,
 		timeout: timeout, http: httpClient, defaults: config.Defaults,
 	}, nil
 }
@@ -94,6 +98,9 @@ func (c *Client) post(ctx context.Context, route string, payload any, out any) e
 	req.Header.Set("content-type", "application/json")
 	if c.apiKey != "" {
 		req.Header.Set("x-api-key", c.apiKey)
+	}
+	if c.orgKey != "" {
+		req.Header.Set("x-org-key", c.orgKey)
 	}
 	res, err := c.http.Do(req)
 	if err != nil {

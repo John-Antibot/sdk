@@ -28,6 +28,8 @@ slider, err := session.GenerateSlider(ctx, &datadome.SliderInput{HTML: html, Cap
 
 Use one `Session` per proxy and cookie jar, and send `session.UserAgent` on every request.
 
+Software you distribute under an organization sets `OrgKey` (sent as `x-org-key`) next to each user's own `APIKey`.
+
 ## Flows
 
 `flow.Solve` takes a 403 body and runs the whole challenge on your transport. `flow.SendTags` posts tags. `examples/` has httpcloak and tls-client transports.
