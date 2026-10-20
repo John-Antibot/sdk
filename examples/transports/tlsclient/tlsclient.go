@@ -5,7 +5,9 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
+	"sync"
 
 	fhttp "github.com/bogdanfinn/fhttp"
 	bogdan "github.com/bogdanfinn/tls-client"
@@ -19,6 +21,10 @@ import (
 type Transport struct {
 	client bogdan.HttpClient
 	jar    *jar.Jar
+	// http1 holds the hosts that answer over HTTP/1.1: geo.captcha-delivery.com
+	// from the start, and every host a response came back on HTTP/1.x from.
+	// Requests to them send req.HTTP1(). Store a host to add one.
+	http1 sync.Map
 }
 
 // New returns a Transport on the Chrome 133 profile; proxy is "" or a proxy URL.
@@ -36,7 +42,9 @@ func New(proxy string) (*Transport, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Transport{client: client, jar: jar.New()}, nil
+	t := &Transport{client: client, jar: jar.New()}
+	t.http1.Store("geo.captcha-delivery.com", true)
+	return t, nil
 }
 
 // Close releases idle connections.
@@ -52,10 +60,22 @@ func (t *Transport) Do(ctx context.Context, req *flow.Request) (*flow.Response, 
 	if err != nil {
 		return nil, err
 	}
+	host := ""
+	if u, err := url.Parse(req.URL); err == nil {
+		host = u.Hostname()
+	}
+	headers := req.Headers
+	if _, h1 := t.http1.Load(host); h1 {
+		headers = req.HTTP1()
+	}
 	order := []string{}
-	for _, h := range req.Headers {
+	for _, h := range headers {
 		name, value := h[0], h[1]
-		if name == "cookie" && value == flow.CookieSlot {
+		if strings.EqualFold(name, "content-length") { // fhttp writes it from the body, here
+			order = append(order, "content-length")
+			continue
+		}
+		if strings.EqualFold(name, "cookie") && value == flow.CookieSlot {
 			value = t.jar.Header(req.URL)
 			if value == "" {
 				continue
@@ -64,8 +84,8 @@ func (t *Transport) Do(ctx context.Context, req *flow.Request) (*flow.Response, 
 		if value == "" {
 			continue
 		}
-		freq.Header.Set(name, value)
-		order = append(order, name)
+		freq.Header[name] = []string{value} // as is: fhttp writes HTTP/1.1 names verbatim
+		order = append(order, strings.ToLower(name))
 	}
 	freq.Header[fhttp.HeaderOrderKey] = order
 	res, err := t.client.Do(freq)
@@ -73,6 +93,9 @@ func (t *Transport) Do(ctx context.Context, req *flow.Request) (*flow.Response, 
 		return nil, err
 	}
 	defer res.Body.Close()
+	if res.ProtoMajor == 1 {
+		t.http1.Store(host, true)
+	}
 	data, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err

@@ -1,0 +1,1201 @@
+[
+ {
+  "name": "interstitial-page",
+  "proto": "h1",
+  "source": "seatgeek-live",
+  "method": "GET",
+  "url": "https://geo.captcha-delivery.com/interstitial/?REDACTED",
+  "line": "GET /interstitial/?REDACTED HTTP/1.1\r\n",
+  "headers": [
+   [
+    "Host",
+    "geo.captcha-delivery.com"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "Upgrade-Insecure-Requests",
+    "1"
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "Accept",
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "cross-site"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "navigate"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "iframe"
+   ],
+   [
+    "Sec-Fetch-Storage-Access",
+    "active"
+   ],
+   [
+    "Referer",
+    "https://seatgeek.com/"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ]
+  ]
+ },
+ {
+  "name": "interstitial-post",
+  "proto": "h1",
+  "source": "seatgeek-live",
+  "method": "POST",
+  "url": "https://geo.captcha-delivery.com/interstitial/",
+  "line": "POST /interstitial/ HTTP/1.1\r\n",
+  "headers": [
+   [
+    "Host",
+    "geo.captcha-delivery.com"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "Content-Length",
+    "10109"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "Content-Type",
+    "application/x-www-form-urlencoded; charset=UTF-8"
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "Accept",
+    "*/*"
+   ],
+   [
+    "Origin",
+    "https://geo.captcha-delivery.com"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "same-origin"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "cors"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "empty"
+   ],
+   [
+    "Referer",
+    "https://geo.captcha-delivery.com/interstitial/?REDACTED"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ]
+  ]
+ },
+ {
+  "name": "captcha-page",
+  "proto": "h1",
+  "source": "seatgeek-live",
+  "method": "GET",
+  "url": "https://geo.captcha-delivery.com/captcha/?REDACTED",
+  "line": "GET /captcha/?REDACTED HTTP/1.1\r\n",
+  "headers": [
+   [
+    "Host",
+    "geo.captcha-delivery.com"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "Upgrade-Insecure-Requests",
+    "1"
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "Accept",
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "cross-site"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "navigate"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "iframe"
+   ],
+   [
+    "Sec-Fetch-Storage-Access",
+    "active"
+   ],
+   [
+    "Referer",
+    "https://seatgeek.com/"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ]
+  ]
+ },
+ {
+  "name": "captcha-check",
+  "proto": "h1",
+  "source": "seatgeek-live",
+  "method": "GET",
+  "url": "https://geo.captcha-delivery.com/captcha/check?REDACTED",
+  "line": "GET /captcha/check?REDACTED HTTP/1.1\r\n",
+  "headers": [
+   [
+    "Host",
+    "geo.captcha-delivery.com"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "Content-Type",
+    "application/x-www-form-urlencoded; charset=UTF-8"
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "Accept",
+    "*/*"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "same-origin"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "cors"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "empty"
+   ],
+   [
+    "Referer",
+    "https://geo.captcha-delivery.com/captcha/?REDACTED"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ]
+  ]
+ },
+ {
+  "name": "interstitial-script",
+  "proto": "h2",
+  "source": "seatgeek-live",
+  "method": "GET",
+  "url": "https://ct.captcha-delivery.com/interstitial.1.33.1.202610190.js",
+  "headers": [
+   [
+    ":method",
+    "GET"
+   ],
+   [
+    ":authority",
+    "ct.captcha-delivery.com"
+   ],
+   [
+    ":scheme",
+    "https"
+   ],
+   [
+    ":path",
+    "/interstitial.1.33.1.202610190.js"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "user-agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "accept",
+    "*/*"
+   ],
+   [
+    "sec-fetch-site",
+    "same-site"
+   ],
+   [
+    "sec-fetch-mode",
+    "no-cors"
+   ],
+   [
+    "sec-fetch-dest",
+    "script"
+   ],
+   [
+    "sec-fetch-storage-access",
+    "active"
+   ],
+   [
+    "referer",
+    "https://geo.captcha-delivery.com/"
+   ],
+   [
+    "accept-encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "accept-language",
+    "en-US,en;q=0.9"
+   ]
+  ]
+ },
+ {
+  "name": "captcha-script",
+  "proto": "h2",
+  "source": "seatgeek-live",
+  "method": "GET",
+  "url": "https://ct.captcha-delivery.com/captcha.1.35.2.202610191.js",
+  "headers": [
+   [
+    ":method",
+    "GET"
+   ],
+   [
+    ":authority",
+    "ct.captcha-delivery.com"
+   ],
+   [
+    ":scheme",
+    "https"
+   ],
+   [
+    ":path",
+    "/captcha.1.35.2.202610191.js"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "user-agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "accept",
+    "*/*"
+   ],
+   [
+    "sec-fetch-site",
+    "same-site"
+   ],
+   [
+    "sec-fetch-mode",
+    "no-cors"
+   ],
+   [
+    "sec-fetch-dest",
+    "script"
+   ],
+   [
+    "sec-fetch-storage-access",
+    "active"
+   ],
+   [
+    "referer",
+    "https://geo.captcha-delivery.com/"
+   ],
+   [
+    "accept-encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "accept-language",
+    "en-US,en;q=0.9"
+   ]
+  ]
+ },
+ {
+  "name": "site-script",
+  "proto": "h2",
+  "source": "seatgeek-live",
+  "method": "GET",
+  "url": "https://ct.captcha-delivery.com/i.js",
+  "headers": [
+   [
+    ":method",
+    "GET"
+   ],
+   [
+    ":authority",
+    "ct.captcha-delivery.com"
+   ],
+   [
+    ":scheme",
+    "https"
+   ],
+   [
+    ":path",
+    "/i.js"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "user-agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "accept",
+    "*/*"
+   ],
+   [
+    "sec-fetch-site",
+    "cross-site"
+   ],
+   [
+    "sec-fetch-mode",
+    "no-cors"
+   ],
+   [
+    "sec-fetch-dest",
+    "script"
+   ],
+   [
+    "sec-fetch-storage-access",
+    "active"
+   ],
+   [
+    "referer",
+    "https://seatgeek.com/"
+   ],
+   [
+    "accept-encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "accept-language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "priority",
+    "u=1"
+   ]
+  ]
+ },
+ {
+  "name": "site-navigate-typed",
+  "proto": "h2",
+  "source": "seatgeek-live",
+  "method": "GET",
+  "url": "https://seatgeek.com/milwaukee-brewers-tickets/10-23-2026-milwaukee-wisconsin-american-family-field/mlb/18528121",
+  "headers": [
+   [
+    ":method",
+    "GET"
+   ],
+   [
+    ":authority",
+    "seatgeek.com"
+   ],
+   [
+    ":scheme",
+    "https"
+   ],
+   [
+    ":path",
+    "/milwaukee-brewers-tickets/10-23-2026-milwaukee-wisconsin-american-family-field/mlb/18528121"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "upgrade-insecure-requests",
+    "1"
+   ],
+   [
+    "user-agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "accept",
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+   ],
+   [
+    "sec-fetch-site",
+    "none"
+   ],
+   [
+    "sec-fetch-mode",
+    "navigate"
+   ],
+   [
+    "sec-fetch-user",
+    "?1"
+   ],
+   [
+    "sec-fetch-dest",
+    "document"
+   ],
+   [
+    "accept-encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "accept-language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "priority",
+    "u=0, i"
+   ]
+  ]
+ },
+ {
+  "name": "site-fetch-post",
+  "proto": "h2",
+  "source": "seatgeek-live",
+  "method": "POST",
+  "url": "https://seatgeek.com/api/h1cap-probe",
+  "headers": [
+   [
+    ":method",
+    "POST"
+   ],
+   [
+    ":authority",
+    "seatgeek.com"
+   ],
+   [
+    ":scheme",
+    "https"
+   ],
+   [
+    ":path",
+    "/api/h1cap-probe"
+   ],
+   [
+    "content-length",
+    "3"
+   ],
+   [
+    "sec-ch-ua-full-version-list",
+    ""
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-model",
+    "\"\""
+   ],
+   [
+    "sec-ch-device-memory",
+    "32"
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-arch",
+    "\"\""
+   ],
+   [
+    "user-agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "content-type",
+    "application/x-www-form-urlencoded; charset=UTF-8"
+   ],
+   [
+    "sec-ch-ua-platform-version",
+    "\"\""
+   ],
+   [
+    "accept",
+    "*/*"
+   ],
+   [
+    "origin",
+    "https://seatgeek.com"
+   ],
+   [
+    "sec-fetch-site",
+    "same-origin"
+   ],
+   [
+    "sec-fetch-mode",
+    "cors"
+   ],
+   [
+    "sec-fetch-dest",
+    "empty"
+   ],
+   [
+    "referer",
+    "https://seatgeek.com/milwaukee-brewers-tickets/10-23-2026-milwaukee-wisconsin-american-family-field/mlb/18528121?REDACTED"
+   ],
+   [
+    "accept-encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "accept-language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "cookie",
+    "REDACTED"
+   ],
+   [
+    "priority",
+    "u=1, i"
+   ]
+  ]
+ },
+ {
+  "name": "local-navigate-typed",
+  "proto": "h1",
+  "source": "local-raw",
+  "method": "GET",
+  "url": "http://127.0.0.1:55848/",
+  "line": "GET / HTTP/1.1",
+  "headers": [
+   [
+    "Host",
+    "127.0.0.1:55848"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "Upgrade-Insecure-Requests",
+    "1"
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "Accept",
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "none"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "navigate"
+   ],
+   [
+    "Sec-Fetch-User",
+    "?1"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "document"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ]
+  ]
+ },
+ {
+  "name": "local-reload",
+  "proto": "h1",
+  "source": "local-raw",
+  "method": "GET",
+  "url": "http://127.0.0.1:55848/",
+  "line": "GET / HTTP/1.1",
+  "headers": [
+   [
+    "Host",
+    "127.0.0.1:55848"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "Cache-Control",
+    "max-age=0"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "Upgrade-Insecure-Requests",
+    "1"
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "Accept",
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "none"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "navigate"
+   ],
+   [
+    "Sec-Fetch-User",
+    "?1"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "document"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "Cookie",
+    "a=1"
+   ]
+  ]
+ },
+ {
+  "name": "local-navigate-link",
+  "proto": "h1",
+  "source": "local-raw",
+  "method": "GET",
+  "url": "http://127.0.0.1:55848/next",
+  "line": "GET /next HTTP/1.1",
+  "headers": [
+   [
+    "Host",
+    "127.0.0.1:55848"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "Upgrade-Insecure-Requests",
+    "1"
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "Accept",
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "same-origin"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "navigate"
+   ],
+   [
+    "Sec-Fetch-User",
+    "?1"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "document"
+   ],
+   [
+    "Referer",
+    "http://127.0.0.1:55848/"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "Cookie",
+    "a=1"
+   ]
+  ]
+ },
+ {
+  "name": "local-script",
+  "proto": "h1",
+  "source": "local-raw",
+  "method": "GET",
+  "url": "http://127.0.0.1:55848/s.js",
+  "line": "GET /s.js HTTP/1.1",
+  "headers": [
+   [
+    "Host",
+    "127.0.0.1:55848"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "Accept",
+    "*/*"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "same-origin"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "no-cors"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "script"
+   ],
+   [
+    "Referer",
+    "http://127.0.0.1:55848/"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "Cookie",
+    "a=1"
+   ]
+  ]
+ },
+ {
+  "name": "local-prerender",
+  "proto": "h1",
+  "source": "local-raw",
+  "method": "GET",
+  "url": "http://127.0.0.1:55848/pre",
+  "line": "GET /pre HTTP/1.1",
+  "headers": [
+   [
+    "Host",
+    "127.0.0.1:55848"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "Upgrade-Insecure-Requests",
+    "1"
+   ],
+   [
+    "Sec-Purpose",
+    "prefetch;prerender"
+   ],
+   [
+    "Sec-Speculation-Tags",
+    "null"
+   ],
+   [
+    "Accept",
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "Sec-Fetch-Site",
+    "none"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "navigate"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "document"
+   ],
+   [
+    "Referer",
+    "http://127.0.0.1:55848/"
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "Cookie",
+    "a=1"
+   ]
+  ]
+ },
+ {
+  "name": "local-fetch-post",
+  "proto": "h1",
+  "source": "local-raw",
+  "method": "POST",
+  "url": "http://127.0.0.1:55848/post",
+  "line": "POST /post HTTP/1.1",
+  "headers": [
+   [
+    "Host",
+    "127.0.0.1:55848"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "Content-Length",
+    "3"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "content-type",
+    "application/x-www-form-urlencoded; charset=UTF-8"
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "Accept",
+    "*/*"
+   ],
+   [
+    "Origin",
+    "http://127.0.0.1:55848"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "same-origin"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "cors"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "empty"
+   ],
+   [
+    "Referer",
+    "http://127.0.0.1:55848/"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "Cookie",
+    "a=1"
+   ]
+  ]
+ },
+ {
+  "name": "local-fetch-post-empty",
+  "proto": "h1",
+  "source": "local-raw",
+  "method": "POST",
+  "url": "http://127.0.0.1:55848/post-empty",
+  "line": "POST /post-empty HTTP/1.1",
+  "headers": [
+   [
+    "Host",
+    "127.0.0.1:55848"
+   ],
+   [
+    "Connection",
+    "keep-alive"
+   ],
+   [
+    "Content-Length",
+    "0"
+   ],
+   [
+    "sec-ch-ua-platform",
+    "\"macOS\""
+   ],
+   [
+    "User-Agent",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+   ],
+   [
+    "sec-ch-ua",
+    "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\""
+   ],
+   [
+    "sec-ch-ua-mobile",
+    "?0"
+   ],
+   [
+    "Accept",
+    "*/*"
+   ],
+   [
+    "Origin",
+    "http://127.0.0.1:55848"
+   ],
+   [
+    "Sec-Fetch-Site",
+    "same-origin"
+   ],
+   [
+    "Sec-Fetch-Mode",
+    "cors"
+   ],
+   [
+    "Sec-Fetch-Dest",
+    "empty"
+   ],
+   [
+    "Referer",
+    "http://127.0.0.1:55848/"
+   ],
+   [
+    "Accept-Encoding",
+    "gzip, deflate, br, zstd"
+   ],
+   [
+    "Accept-Language",
+    "en-US,en;q=0.9"
+   ],
+   [
+    "Cookie",
+    "a=1"
+   ]
+  ]
+ }
+]

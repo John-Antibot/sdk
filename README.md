@@ -30,6 +30,10 @@ Use one `Session` per proxy and cookie jar, and send `session.UserAgent` on ever
 
 Software you distribute under an organization sets `OrgKey` (sent as `x-org-key`) next to each user's own `APIKey`.
 
+## HTTP/1.1
+
+`geo.captcha-delivery.com` uses HTTP/1.1 only. Header sets are in HTTP/2 form. When your transport sends a request over HTTP/1.1, send `req.HTTP1()` in its order. It adds `Host` and `Connection: keep-alive` first and `Content-Length` on a POST. It writes names as Chrome does (`User-Agent`, lowercase `sec-ch-ua`) and removes `priority`. Both example transports do this for `geo.captcha-delivery.com` and for each host that replied over HTTP/1.1.
+
 ## Flows
 
 `flow.Solve` takes a 403 body and runs the whole challenge on your transport. `flow.SendTags` posts tags. `examples/` has httpcloak and tls-client transports.
