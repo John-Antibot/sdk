@@ -52,7 +52,7 @@ func Setup() *Env {
 		log.Fatalf("FAIL unknown -transport %q", *transport)
 	}
 
-	client, err := datadome.New(datadome.Config{Endpoint: *gen})
+	client, err := datadome.New(datadome.Config{Endpoint: *gen, APIKey: os.Getenv("JOHNANTIBOT_API_KEY")})
 	if err != nil {
 		log.Fatalf("FAIL client: %v", err)
 	}
