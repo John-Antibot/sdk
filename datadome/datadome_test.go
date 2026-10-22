@@ -3,6 +3,7 @@ package datadome
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -119,19 +120,35 @@ func TestGenerateTagsWire(t *testing.T) {
 }
 
 func TestAPIErrorClassification(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(400)
-		_, _ = io.WriteString(w, `{"error":"captcha page is hardblock (no solvable slider)"}`)
-	}))
-	defer srv.Close()
-	client, _ := New(Config{Endpoint: srv.URL})
-	session := client.Session(Session{})
-	_, err := session.GenerateSlider(context.Background(), &SliderInput{HTML: "<html></html>", CaptchaURL: "https://geo.captcha-delivery.com/captcha/?x=1"})
-	if !IsHardblock(err) {
-		t.Errorf("IsHardblock(%v) = false", err)
-	}
-	if IsPuzzleUnsupported(err) {
-		t.Errorf("IsPuzzleUnsupported(%v) = true", err)
+	for _, c := range []struct {
+		name, body string
+		status     int
+		hardblock  bool
+	}{
+		{"422 hardblock", `{"error":"captcha page is hardblock (no solvable slider)","session":"s","hardblock":true}`, 422, true},
+		{"an earlier gateway's 500", `{"error":"captcha page is hardblock (no solvable slider)"}`, 500, true},
+		{"a failure", `{"error":"generation failed"}`, 500, false},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(c.status)
+				_, _ = io.WriteString(w, c.body)
+			}))
+			defer srv.Close()
+			client, _ := New(Config{Endpoint: srv.URL})
+			session := client.Session(Session{})
+			_, err := session.GenerateSlider(context.Background(), &SliderInput{HTML: "<html></html>", CaptchaURL: "https://geo.captcha-delivery.com/captcha/?x=1"})
+			var apiErr *APIError
+			if !errors.As(err, &apiErr) || apiErr.StatusCode != c.status {
+				t.Fatalf("err = %v, want an APIError %d", err, c.status)
+			}
+			if IsHardblock(err) != c.hardblock {
+				t.Errorf("IsHardblock(%v) = %v, want %v", err, !c.hardblock, c.hardblock)
+			}
+			if IsPuzzleUnsupported(err) {
+				t.Errorf("IsPuzzleUnsupported(%v) = true", err)
+			}
+		})
 	}
 }
 
