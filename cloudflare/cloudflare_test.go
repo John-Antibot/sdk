@@ -110,6 +110,7 @@ func TestEndedJobsAreErrors(t *testing.T) {
 		{"declined", `{"id":"job_1","state":"declined","error":"the challenge was not passed","retry":true}`, IsDeclined, true},
 		{"failed", `{"id":"job_1","state":"failed","error":"the proxy is refused: x is not a public address"}`, func(err error) bool { return !IsDeclined(err) }, false},
 		{"no wall", `{"id":"job_1","state":"failed","error":"the page serves no challenge (status 200)"}`, IsNoChallenge, false},
+		{"rotating proxy", `{"id":"job_1","state":"failed","error":"the proxy exits from a different address on each connection (1.1.1.1, then 2.2.2.2): a clearance is for one address"}`, IsRotatingProxy, false},
 	} {
 		a := &api{t: t, terminal: tc.terminal}
 		_, err := newClient(t, a).SolveChallenge(context.Background(), &ChallengeInput{URL: "https://example.com/", Proxy: "8.8.8.8:80"})
