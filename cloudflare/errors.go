@@ -58,3 +58,11 @@ func IsRateLimited(err error) bool { return apiStatus(err, http.StatusTooManyReq
 
 // IsBadRequest reports whether err is the API refusing the input (HTTP 400): the proxy, the user agent, a field.
 func IsBadRequest(err error) bool { return apiStatus(err, http.StatusBadRequest) }
+
+// IsRotatingProxy reports whether err is a job refused because the proxy exits from a different address on each connection: the clearance
+// is for one address and the page is asked for from another. Use a sticky session of the provider (its session id in the username) or a
+// static proxy. The price is returned.
+func IsRotatingProxy(err error) bool {
+	var job *JobError
+	return errors.As(err, &job) && strings.Contains(job.Message, "different address on each connection")
+}

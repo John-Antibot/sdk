@@ -54,6 +54,7 @@ res, err = cf.SolveTurnstile(ctx, &cloudflare.TurnstileInput{PageURL: "https://w
 - The price is charged when the job is sent and returned if it fails or is declined. `cloudflare.IsDeclined(err)`: the site turned this attempt down (a few in a hundred); send another.
 - `IsInsufficientBalance`, `IsSiteNotApproved`, `IsRateLimited` (50 open jobs per account), `IsBadRequest` and `IsNoChallenge` name the other refusals.
 - `UserAgent` is optional. Set it to your client's user agent to get a clearance for it (the exact user agent of a Chrome build on macOS that the API runs; anything else is refused), or leave it empty and use `res.UserAgent`.
+- The proxy must keep its address from one connection to the next, because you spend the clearance from a connection of your own: use a sticky session (the provider's session id in the username) or a static proxy. A proxy that changes its address on each connection is refused and the price is returned (`cloudflare.IsRotatingProxy(err)`).
 - If your proxy admits only listed source addresses, admit ours: `GET /api/catalog`, `egressIps` of `cloudflare`.
 
 ## HTTP/1.1
