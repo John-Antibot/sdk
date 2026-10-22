@@ -113,5 +113,5 @@ go run ./datadome_interstitial -transport httpcloak -proxy http://user:pass@host
 | `cloudflare_challenge` | Loads a page (403), clears it through the proxy, loads it again with the clearance and the user agent of the result. |
 | `cloudflare_turnstile` | Solves a widget and prints the token. |
 | `datadome_tags` | Loads a page and posts the `ch` and `le` tags. |
-| `datadome_interstitial` | Solves the interstitial on the page. |
-| `datadome_slider` | Solves the slider on the page. |
+| `datadome_interstitial` | Solves the interstitial and reloads the page. |
+| `datadome_slider` | Solves an interstitial or slider until the page loads. |
