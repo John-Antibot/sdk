@@ -39,6 +39,18 @@ slider, err := session.GenerateSlider(ctx, &datadome.SliderInput{HTML: html, Cap
 
 Use one `Session` per proxy and cookie jar, and send `session.UserAgent` on every request.
 
+### Billing and errors
+
+The price is charged when the request is sent and returned if it fails. A non-200 reply is a `*datadome.APIError` with `StatusCode` and `Message`.
+
+| Check | Meaning |
+|---|---|
+| `datadome.IsHardblock(err)` | The site blocked the session outright: DataDome served its hardblock page, with no slider to solve (`422`, `"hardblock": true`). Change the proxy and the session. Free, and not counted in your statistics. |
+| `IsPuzzleUnsupported` | A puzzle captcha, not a slider. Free. |
+| `IsRateLimited` | `429`: wait, then try again. |
+
+`flow.Solve` refuses a hard block in the 403 itself (`t=bv`) before it sends anything.
+
 ### Flows
 
 `flow.Solve` takes a 403 body and runs the whole challenge on your transport. `flow.SendTags` posts tags. The examples have httpcloak and tls-client transports.

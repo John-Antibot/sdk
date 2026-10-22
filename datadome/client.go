@@ -128,7 +128,8 @@ func (c *Client) post(ctx context.Context, route string, payload any, out any) e
 	}
 	if res.StatusCode != http.StatusOK {
 		var failure struct {
-			Error string `json:"error"`
+			Error     string `json:"error"`
+			Hardblock bool   `json:"hardblock"`
 		}
 		_ = json.Unmarshal(data, &failure)
 		message := failure.Error
@@ -138,7 +139,7 @@ func (c *Client) post(ctx context.Context, route string, payload any, out any) e
 		if message == "" {
 			message = res.Status
 		}
-		return &APIError{StatusCode: res.StatusCode, Message: message}
+		return &APIError{StatusCode: res.StatusCode, Message: message, Hardblock: failure.Hardblock}
 	}
 	if err := json.Unmarshal(data, out); err != nil {
 		return fmt.Errorf("datadome: decode response: %w", err)
