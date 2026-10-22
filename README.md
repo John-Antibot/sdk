@@ -1,6 +1,6 @@
 # John Antibot Go SDK
 
-Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome API.
+Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome and Cloudflare APIs.
 
 ```bash
 go get github.com/John-Avenue/john-antibot-sdk@latest
@@ -29,6 +29,32 @@ slider, err := session.GenerateSlider(ctx, &datadome.SliderInput{HTML: html, Cap
 Use one `Session` per proxy and cookie jar, and send `session.UserAgent` on every request.
 
 Software you distribute under an organization sets `OrgKey` (sent as `x-org-key`) next to each user's own `APIKey`.
+
+## Cloudflare
+
+A Cloudflare solve is a job that runs on our side, through your proxy. You send the page and the proxy; the clearance is for the address that proxy exits from.
+
+```go
+cf, _ := cloudflare.New(cloudflare.Config{APIKey: os.Getenv("JOHNANTIBOT_API_KEY")})
+
+// A challenge page: the cf_clearance cookie.
+res, err := cf.SolveChallenge(ctx, &cloudflare.ChallengeInput{
+	URL:      "https://www.example.com/",
+	Proxy:    "http://user:pass@host:port", // any form a provider prints; a public address
+	Timezone: "America/New_York",           // the zone of the proxy's location
+})
+// res.Clearance(): the cf_clearance value. res.UserAgent: send it in each request to the site, from the same proxy.
+
+// A Turnstile widget: the token.
+res, err = cf.SolveTurnstile(ctx, &cloudflare.TurnstileInput{PageURL: "https://www.example.com/login", SiteKey: "0x4AAAAAAA…", Proxy: proxy})
+// res.Token()
+```
+
+- A solve takes about 7 seconds. `ctx` bounds the wait, not the job. `SubmitChallenge`, `SubmitTurnstile`, `Job` and `Wait` are the same in steps.
+- The price is charged when the job is sent and returned if it fails or is declined. `cloudflare.IsDeclined(err)`: the site turned this attempt down (a few in a hundred); send another.
+- `IsInsufficientBalance`, `IsSiteNotApproved`, `IsRateLimited` (50 open jobs per account), `IsBadRequest` and `IsNoChallenge` name the other refusals.
+- `UserAgent` is optional. Set it to your client's user agent to get a clearance for it (the exact user agent of a Chrome build on macOS that the API runs; anything else is refused), or leave it empty and use `res.UserAgent`.
+- If your proxy admits only listed source addresses, admit ours: `GET /api/catalog`, `egressIps` of `cloudflare`.
 
 ## HTTP/1.1
 
