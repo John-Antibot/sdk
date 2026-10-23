@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/John-Avenue/john-antibot-sdk/datadome"
 )
 
 // wire is one request Chrome 155 (macOS, headful) sent, from testdata/chrome155_wire.json:
@@ -31,6 +33,12 @@ func loadWire(t *testing.T) map[string]wire {
 		m[w.Name] = w
 	}
 	return m
+}
+
+// chrome is the browser of a Chrome major on macOS, as DefaultBrowser is for the latest.
+func chrome(major int) Browser {
+	ua := datadome.ChromeUserAgent(major)
+	return Browser{UserAgent: ua, SecChUA: datadome.SecCHUA(ua), Platform: datadome.SecCHUAPlatform(ua), AcceptLanguage: "en-US,en;q=0.9"}
 }
 
 // comparable drops pseudo-headers, and maps a captured cookie to CookieSlot;
@@ -61,7 +69,7 @@ func hasCookie(h Headers) bool {
 
 func TestHTTP1MatchesChrome(t *testing.T) {
 	w := loadWire(t)
-	b := DefaultBrowser
+	b := chrome(155) // the wire captures are Chrome 155's
 	site := "https://seatgeek.com/milwaukee-brewers-tickets/10-23-2026-milwaukee-wisconsin-american-family-field/mlb/18528121"
 	local := w["local-reload"].URL
 	cases := []struct {
@@ -91,7 +99,7 @@ func TestHTTP1MatchesChrome(t *testing.T) {
 
 func TestH2MatchesChrome(t *testing.T) {
 	w := loadWire(t)
-	b := DefaultBrowser
+	b := chrome(155) // the wire captures are Chrome 155's
 	site := "https://seatgeek.com/milwaukee-brewers-tickets/10-23-2026-milwaukee-wisconsin-american-family-field/mlb/18528121"
 	for name, h := range map[string]Headers{
 		"interstitial-script": b.ChallengeScript(),
@@ -121,5 +129,43 @@ func TestHTTP1Rules(t *testing.T) {
 	}
 	if got := HTTP1(nil, "POST", "https://example.com:443/", 0); !reflect.DeepEqual(got, Headers{{"Host", "example.com"}, {"Connection", "keep-alive"}, {"Content-Length", "0"}}) {
 		t.Errorf("empty POST: %q", got)
+	}
+}
+
+// Chrome 156 sends the headers of 155 with its own user agent and client hints: the recorded 155 and 156 presets differ in no other
+// header, and in no TLS or HTTP/2 setting (the 156 preset is based on 155). Its sec-ch-ua is the string Chrome 156 sends, the grease
+// brand included.
+func TestChrome156IsChrome155WithItsOwnIdentity(t *testing.T) {
+	b155, b156 := chrome(155), chrome(156)
+	if b156.SecChUA != `"Not:A-Brand";v="8", "Chromium";v="156", "Google Chrome";v="156"` {
+		t.Errorf("sec-ch-ua %s", b156.SecChUA)
+	}
+	if DefaultBrowser.UserAgent != b156.UserAgent {
+		t.Errorf("DefaultBrowser is %s, not Chrome 156", DefaultBrowser.UserAgent)
+	}
+	site := "https://seatgeek.com/some/page"
+	swap := func(h Headers) Headers {
+		out := Headers{}
+		for _, kv := range h {
+			switch kv[0] {
+			case "user-agent":
+				kv[1] = b156.UserAgent
+			case "sec-ch-ua":
+				kv[1] = b156.SecChUA
+			}
+			out = append(out, kv)
+		}
+		return out
+	}
+	for name, pair := range map[string][2]Headers{
+		"navigate":         {b155.Navigate(""), b156.Navigate("")},
+		"navigate-referer": {b155.Navigate(site), b156.Navigate(site)},
+		"reload":           {b155.Reload(), b156.Reload()},
+		"challenge-script": {b155.ChallengeScript(), b156.ChallengeScript()},
+		"site-script":      {b155.Script(site), b156.Script(site)},
+	} {
+		if want := swap(append(Headers(nil), pair[0]...)); !reflect.DeepEqual(pair[1], want) {
+			t.Errorf("%s:\n got %q\nwant %q", name, pair[1], want)
+		}
 	}
 }

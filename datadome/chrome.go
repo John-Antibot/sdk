@@ -8,7 +8,7 @@ import (
 )
 
 // LatestChromeMajor is the Chrome major version default identities use.
-const LatestChromeMajor = 155
+const LatestChromeMajor = 156
 
 // LatestUserAgent is Chrome LatestChromeMajor on macOS.
 var LatestUserAgent = ChromeUserAgent(LatestChromeMajor)
