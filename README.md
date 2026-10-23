@@ -1,6 +1,6 @@
 # John Antibot Go SDK
 
-Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome and Cloudflare APIs.
+Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs.
 
 ```bash
 go get github.com/John-Avenue/john-antibot-sdk@latest
@@ -10,6 +10,7 @@ go get github.com/John-Avenue/john-antibot-sdk@latest
 |---|---|
 | `datadome` | Generators for tags, interstitial and slider payloads. |
 | `cloudflare` | Cloudflare challenge and Turnstile solves, as jobs on our side through your proxy. |
+| `recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs on our side through your proxy. |
 | `flow` | Complete DataDome flows over your own HTTP transport. |
 | `examples` | Runnable programs for each of the above. |
 
@@ -107,6 +108,48 @@ The price is charged when the job is sent and returned if it fails or is decline
 | `IsRateLimited` | 50 open jobs per account. |
 | `IsBadRequest` | The input was refused. |
 
+## reCAPTCHA
+
+A reCAPTCHA v3 token is a job that runs on our side, through your proxy. You send the page, the site key and the proxy; we run the reCAPTCHA client of the site, so the token is for the address that proxy exits from.
+
+```go
+rc, _ := recaptcha.New(recaptcha.Config{APIKey: os.Getenv("JOHNANTIBOT_API_KEY")})
+
+// A page that loads the classic script (api.js).
+res, err := rc.SolveV3(ctx, &recaptcha.Input{
+	URL:     "https://www.example.com/login", // the page that asks for the token (approved for your key)
+	SiteKey: "6Lc…",                          // the site's reCAPTCHA key
+	Action:  "login",                         // what the page passes to execute; empty is "submit"
+	Proxy:   "http://user:pass@host:port",    // any form a provider prints; a public address
+})
+
+// A page that loads reCAPTCHA Enterprise (enterprise.js): the same input.
+res, err = rc.SolveEnterprise(ctx, &recaptcha.Input{URL: "https://www.example.com/login", SiteKey: "6Lc…", Proxy: proxy})
+```
+
+| Result | Use |
+|---|---|
+| `res.Token` | The token: the `g-recaptcha-response` value, or what the page's `execute` call would have returned. |
+| `res.ExpiresAt` | When Google stops accepting it. Send the token before. |
+| `res.Headers()` | `user-agent`, `accept-language` and the client hints of the browser the token was made as. Send them in the request that carries the token. |
+
+A solve takes a few seconds. `ctx` bounds the wait, not the job. `SubmitV3`, `SubmitEnterprise`, `Job` and `Wait` do the same in steps. `Timeout` is the job's wall: from 10 seconds to the most the API allows (60 on the hosted API); empty is 30.
+
+- The proxy must have a public address. Send the request that carries the token from the same address.
+- If your proxy admits only listed source addresses, admit ours: `GET /api/catalog`, `egressIps` of `recaptcha`.
+
+### Billing and errors
+
+The price is charged when the job is sent and returned if it fails. A job that ends without a token is a `*recaptcha.JobError` with the API's text; a refusal is a `*recaptcha.APIError` with `StatusCode` and `Message`.
+
+| Check | Meaning |
+|---|---|
+| `recaptcha.IsInsufficientBalance(err)` | The balance is below the price. |
+| `IsSiteNotApproved` | The site is not approved for your key. |
+| `IsRateLimited` | The account has too many open jobs: wait for one to finish. |
+| `IsBadRequest` | The input was refused: the proxy, the site key, a field. |
+| `IsDeclined` | The API turned the attempt down and did not charge it. Send another. |
+
 ## Examples
 
 `examples` is its own module. Set `JOHNANTIBOT_API_KEY`, then:
@@ -117,6 +160,7 @@ export CF_PROXY=http://user:pass@host:port   # a sticky session or a static prox
 
 go run ./cloudflare_challenge -url https://www.example.com/
 go run ./cloudflare_turnstile -url https://www.example.com/login -sitekey 0x4AAAAAAA…
+go run ./recaptcha_v3 -url https://www.example.com/login -sitekey 6Lc… -proxy http://user:pass@host:port
 go run ./datadome_interstitial -transport httpcloak -proxy http://user:pass@host:port
 ```
 
@@ -124,6 +168,7 @@ go run ./datadome_interstitial -transport httpcloak -proxy http://user:pass@host
 |---|---|
 | `cloudflare_challenge` | Loads a page (403), clears it through the proxy, loads it again with the clearance and the user agent of the result. |
 | `cloudflare_turnstile` | Solves a widget and prints the token. |
+| `recaptcha_v3` | Makes a reCAPTCHA v3 token (`-enterprise` for Enterprise pages) and prints it with the headers of the browser it was made as. |
 | `datadome_tags` | Loads a page and posts the `ch` and `le` tags. |
 | `datadome_interstitial` | Solves the interstitial and reloads the page. |
 | `datadome_slider` | Solves an interstitial or slider until the page loads. |
