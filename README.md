@@ -1,6 +1,6 @@
 # John Antibot Go SDK
 
-Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs.
+Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
 
 ```bash
 go get github.com/John-Avenue/john-antibot-sdk@latest
@@ -11,6 +11,7 @@ go get github.com/John-Avenue/john-antibot-sdk@latest
 | `datadome` | Generators for tags, interstitial and slider payloads. |
 | `cloudflare` | Cloudflare challenge and Turnstile solves, as jobs on our side through your proxy. |
 | `recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs on our side through your proxy. |
+| `account` | The balance of your key's account. |
 | `flow` | Complete DataDome flows over your own HTTP transport. |
 | `examples` | Runnable programs for each of the above. |
 
@@ -150,6 +151,18 @@ The price is charged when the job is sent and returned if it fails. A job that e
 | `IsBadRequest` | The input was refused: the proxy, the site key, a field. |
 | `IsDeclined` | The API turned the attempt down and did not charge it. Send another. |
 
+## Account
+
+Each paid call takes its price from your balance when it starts, and gets a `402` when the balance is less. `Balance` reads it first. It is free.
+
+```go
+acct, _ := account.New(account.Config{APIKey: os.Getenv("JOHNANTIBOT_API_KEY")})
+balance, err := acct.Balance(ctx)
+// balance.Micros is in millionths of a dollar, the unit of a price in the catalog: 2000 is $0.002. balance.Dollars() is for display.
+```
+
+A key that is not metered (one of the service's own) has no account: `balance.Metered` is `false` and `Micros` is zero. A missing, unknown or revoked key, or the key of a disabled account, is `account.IsBadKey(err)`. Software under an organization reads the balance of each user's own key.
+
 ## Examples
 
 `examples` is its own module. Set `JOHNANTIBOT_API_KEY`, then:
@@ -161,6 +174,7 @@ export CF_PROXY=http://user:pass@host:port   # a sticky session or a static prox
 go run ./cloudflare_challenge -url https://www.example.com/
 go run ./cloudflare_turnstile -url https://www.example.com/login -sitekey 0x4AAAAAAA…
 go run ./recaptcha_v3 -url https://www.example.com/login -sitekey 6Lc… -proxy http://user:pass@host:port
+go run ./account_balance
 go run ./datadome_interstitial -transport httpcloak -proxy http://user:pass@host:port
 ```
 
@@ -169,6 +183,7 @@ go run ./datadome_interstitial -transport httpcloak -proxy http://user:pass@host
 | `cloudflare_challenge` | Loads a page (403), clears it through the proxy, loads it again with the clearance and the user agent of the result. |
 | `cloudflare_turnstile` | Solves a widget and prints the token. |
 | `recaptcha_v3` | Makes a reCAPTCHA v3 token (`-enterprise` for Enterprise pages) and prints it with the headers of the browser it was made as. |
+| `account_balance` | Prints the balance of your key's account in dollars. |
 | `datadome_tags` | Loads a page and posts the `ch` and `le` tags. |
 | `datadome_interstitial` | Solves the interstitial and reloads the page. |
 | `datadome_slider` | Solves an interstitial or slider until the page loads. |
