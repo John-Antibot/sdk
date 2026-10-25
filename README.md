@@ -3,8 +3,10 @@
 Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
 
 ```bash
-go get github.com/John-Avenue/john-antibot-sdk@latest
+go get github.com/John-Antibot/sdk@latest
 ```
+
+Moved from `github.com/John-Avenue/john-antibot-sdk` in v0.6.0: change the import path to `github.com/John-Antibot/sdk`; v0.5.x stays at the old path.
 
 | Package | |
 |---|---|

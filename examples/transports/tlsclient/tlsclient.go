@@ -13,8 +13,8 @@ import (
 	bogdan "github.com/bogdanfinn/tls-client"
 	"github.com/bogdanfinn/tls-client/profiles"
 
-	"github.com/John-Avenue/john-antibot-sdk/examples/internal/jar"
-	"github.com/John-Avenue/john-antibot-sdk/flow"
+	"github.com/John-Antibot/sdk/examples/internal/jar"
+	"github.com/John-Antibot/sdk/flow"
 )
 
 // Transport implements flow.Transport over one tls-client instance.

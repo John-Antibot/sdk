@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/John-Avenue/john-antibot-sdk/datadome"
+	"github.com/John-Antibot/sdk/datadome"
 )
 
 // SolveOptions tunes a solve flow.

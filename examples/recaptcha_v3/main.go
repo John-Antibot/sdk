@@ -10,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/John-Avenue/john-antibot-sdk/recaptcha"
+	"github.com/John-Antibot/sdk/recaptcha"
 )
 
 func main() {

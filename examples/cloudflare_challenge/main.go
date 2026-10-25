@@ -11,9 +11,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/John-Avenue/john-antibot-sdk/cloudflare"
-	"github.com/John-Avenue/john-antibot-sdk/examples/transports/httpcloak"
-	"github.com/John-Avenue/john-antibot-sdk/flow"
+	"github.com/John-Antibot/sdk/cloudflare"
+	"github.com/John-Antibot/sdk/examples/transports/httpcloak"
+	"github.com/John-Antibot/sdk/flow"
 )
 
 func main() {

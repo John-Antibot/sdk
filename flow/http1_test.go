@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/John-Avenue/john-antibot-sdk/datadome"
+	"github.com/John-Antibot/sdk/datadome"
 )
 
 // wire is one request Chrome 155 (macOS, headful) sent, from testdata/chrome155_wire.json:

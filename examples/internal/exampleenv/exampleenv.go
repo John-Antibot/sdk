@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/John-Avenue/john-antibot-sdk/datadome"
-	"github.com/John-Avenue/john-antibot-sdk/examples/transports/httpcloak"
-	"github.com/John-Avenue/john-antibot-sdk/examples/transports/tlsclient"
-	"github.com/John-Avenue/john-antibot-sdk/flow"
+	"github.com/John-Antibot/sdk/datadome"
+	"github.com/John-Antibot/sdk/examples/transports/httpcloak"
+	"github.com/John-Antibot/sdk/examples/transports/tlsclient"
+	"github.com/John-Antibot/sdk/flow"
 )
 
 // Env is one example run's wiring.

@@ -11,8 +11,8 @@ import (
 
 	cloak "github.com/sardanioss/httpcloak"
 
-	"github.com/John-Avenue/john-antibot-sdk/examples/internal/jar"
-	"github.com/John-Avenue/john-antibot-sdk/flow"
+	"github.com/John-Antibot/sdk/examples/internal/jar"
+	"github.com/John-Antibot/sdk/flow"
 )
 
 // Transport implements flow.Transport over one httpcloak session.
