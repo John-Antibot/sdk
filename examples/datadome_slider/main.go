@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/John-Avenue/john-antibot-sdk/datadome"
-	"github.com/John-Avenue/john-antibot-sdk/examples/internal/exampleenv"
-	"github.com/John-Avenue/john-antibot-sdk/flow"
+	"github.com/John-Antibot/sdk/datadome"
+	"github.com/John-Antibot/sdk/examples/internal/exampleenv"
+	"github.com/John-Antibot/sdk/flow"
 )
 
 func main() {

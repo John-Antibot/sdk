@@ -1,4 +1,4 @@
-module github.com/John-Avenue/john-antibot-sdk
+module github.com/John-Antibot/sdk
 
 go 1.23
 

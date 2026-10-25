@@ -1,9 +1,9 @@
-module github.com/John-Avenue/john-antibot-sdk/examples
+module github.com/John-Antibot/sdk/examples
 
 go 1.26.0
 
 require (
-	github.com/John-Avenue/john-antibot-sdk v0.0.0
+	github.com/John-Antibot/sdk v0.0.0
 	github.com/bogdanfinn/fhttp v0.6.8
 	github.com/bogdanfinn/tls-client v1.15.1
 	github.com/sardanioss/httpcloak v1.6.10
@@ -35,4 +35,4 @@ require (
 	golang.org/x/tools v0.39.0 // indirect
 )
 
-replace github.com/John-Avenue/john-antibot-sdk => ../
+replace github.com/John-Antibot/sdk => ../

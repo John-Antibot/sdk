@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/John-Avenue/john-antibot-sdk/cloudflare"
+	"github.com/John-Antibot/sdk/cloudflare"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/John-Avenue/john-antibot-sdk/account"
+	"github.com/John-Antibot/sdk/account"
 )
 
 func main() {

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/John-Avenue/john-antibot-sdk/datadome"
+	"github.com/John-Antibot/sdk/datadome"
 )
 
 // Transport is the target-site HTTP transport a flow runs over.
