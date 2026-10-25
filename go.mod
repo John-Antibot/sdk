@@ -1,3 +1,4 @@
+// Deprecated: the SDK moved to github.com/John-Antibot/sdk (v0.6.0 and later).
 module github.com/John-Avenue/john-antibot-sdk
 
 go 1.23
