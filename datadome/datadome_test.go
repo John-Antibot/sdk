@@ -51,7 +51,7 @@ func TestGenerateInterstitialWireAndForm(t *testing.T) {
 		t.Fatal(err)
 	}
 	for k, want := range map[string]any{
-		"html": interstitialHTML, "deviceUrl": "https://geo.captcha-delivery.com/interstitial/?x=1", "script": "/*script*/",
+		"html": interstitialHTML, "deviceUrl": "https://geo.captcha-delivery.com/interstitial/?x=1", "scriptHash": scriptHash("/*script*/"),
 		"referer": "https://seatgeek.com/", "session": "sess-1", "sessionKey": "sess-1", "timezone": "America/New_York",
 	} {
 		if got[k] != want {
@@ -116,6 +116,15 @@ func TestGenerateTagsWire(t *testing.T) {
 	}
 	if out.Session != "sess-new" || session.Session != "sess-new" {
 		t.Errorf("session token not learned: out=%q session=%q", out.Session, session.Session)
+	}
+	if _, ok := got["scriptHash"]; ok {
+		t.Errorf("no Script, no scriptHash: %v", got["scriptHash"])
+	}
+	if _, err := session.GenerateTags(context.Background(), &TagsInput{Event: EventLE, Cookie: "c", SiteKey: "KEY", Script: "/*tags*/"}); err != nil {
+		t.Fatal(err)
+	}
+	if got["scriptHash"] != scriptHash("/*tags*/") || got["script"] != nil {
+		t.Errorf("tags wire scriptHash = %v script = %v", got["scriptHash"], got["script"])
 	}
 }
 
@@ -219,8 +228,8 @@ func TestInterstitialSendsClientScript(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got["script"] != "/*challenge script*/" {
-		t.Fatalf("wire script = %v, want the bytes the caller loaded", got["script"])
+	if got["scriptHash"] != scriptHash("/*challenge script*/") || got["script"] != nil {
+		t.Fatalf("wire scriptHash = %v script = %v, want the hash of the bytes the caller loaded, and not the bytes", got["scriptHash"], got["script"])
 	}
 }
 

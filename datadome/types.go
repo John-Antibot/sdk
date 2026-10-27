@@ -18,6 +18,9 @@ type TagsInput struct {
 	SiteKey string
 	// Version is the optional tags.js version (ddv).
 	Version string
+	// Script is the source of the tags.js the page loaded, optional: the service runs that build, also when
+	// the site still serves an older one. Only its SHA-256 is sent. Empty: the current build.
+	Script string
 	// Referer is the page URL; defaults to Session.Referer.
 	Referer string
 }
@@ -40,7 +43,7 @@ type InterstitialInput struct {
 	// FetchedAt is when HTML was fetched.
 	FetchedAt time.Time
 	// Script is the source of the page's external challenge script (see ChallengeScriptURL);
-	// empty when the page inlines it.
+	// empty when the page inlines it. Only its SHA-256 is sent.
 	Script string
 }
 
