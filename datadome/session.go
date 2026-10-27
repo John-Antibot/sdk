@@ -2,6 +2,8 @@ package datadome
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"strings"
@@ -99,6 +101,9 @@ func (s *Session) GenerateTags(ctx context.Context, in *TagsInput) (*TagsRespons
 	if in.Version != "" {
 		req["version"] = in.Version
 	}
+	if in.Script != "" {
+		req["scriptHash"] = scriptHash(in.Script)
+	}
 	referer := nonEmpty(in.Referer, s.Referer)
 	if referer == "" {
 		return nil, errors.New("datadome: TagsInput.Referer (or Session.Referer) is required: the page the tags run on")
@@ -135,7 +140,7 @@ func (s *Session) GenerateInterstitial(ctx context.Context, in *InterstitialInpu
 		req["challengeFetchedAtMs"] = in.FetchedAt.UnixMilli()
 	}
 	if in.Script != "" {
-		req["script"] = in.Script
+		req["scriptHash"] = scriptHash(in.Script)
 	}
 	var wire struct {
 		Payload   string `json:"payload"`
@@ -175,7 +180,7 @@ func (s *Session) GenerateSlider(ctx context.Context, in *SliderInput) (*SliderR
 		req["challengeFetchedAtMs"] = in.FetchedAt.UnixMilli()
 	}
 	if in.Script != "" {
-		req["script"] = in.Script
+		req["scriptHash"] = scriptHash(in.Script)
 	}
 	var wire struct {
 		Payload   string `json:"payload"`
@@ -192,6 +197,12 @@ func (s *Session) GenerateSlider(ctx context.Context, in *SliderInput) (*SliderR
 	out := SliderResponse{Session: wire.Session, UserAgent: wire.UserAgent, Payload: u, CheckURL: u}
 	s.learn(out.Session, out.UserAgent)
 	return &out, nil
+}
+
+// scriptHash is what the service takes of a page script: its SHA-256, as hex.
+func scriptHash(script string) string {
+	h := sha256.Sum256([]byte(script))
+	return hex.EncodeToString(h[:])
 }
 
 // requireScript errors when the page loads an external script but none was passed.

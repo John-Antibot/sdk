@@ -28,7 +28,7 @@ session := client.Session(datadome.Session{Referer: "https://seatgeek.com/"})
 // Tags: ch, then le.
 tags, err := session.GenerateTags(ctx, &datadome.TagsInput{Event: datadome.EventCH, Cookie: cid, SiteKey: ddk})
 
-// Interstitial: the page, the URL you loaded, the script it loads.
+// Interstitial: the page, the URL you loaded, the script it loads (only its SHA-256 is sent).
 inter, err := session.GenerateInterstitial(ctx, &datadome.InterstitialInput{HTML: html, DeviceLink: link, Script: script})
 
 // Slider: same inputs.
