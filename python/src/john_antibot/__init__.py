@@ -21,7 +21,7 @@ from .errors import (
     is_site_not_approved,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.8.0"
 
 __all__ = [
     "DEFAULT_ENDPOINT",

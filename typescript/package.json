@@ -1,6 +1,7 @@
 {
   "name": "@john-antibot/sdk",
-  "version": "0.1.0",
+  "version": "0.8.0",
+  "private": true,
   "description": "John Antibot client for the DataDome, Cloudflare and reCAPTCHA APIs.",
   "license": "MIT",
   "repository": {
@@ -28,7 +29,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test test/*.test.ts"
+    "test": "node --test test/*.test.ts",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

@@ -3,7 +3,7 @@
 Python client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
 
 ```bash
-pip install john-antibot
+pip install "git+https://github.com/John-Antibot/sdk.git@v0.8.0#subdirectory=python"
 ```
 
 Python 3.9+. One dependency, `httpx`. Typed.
