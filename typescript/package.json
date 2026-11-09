@@ -1,6 +1,6 @@
 {
   "name": "@john-antibot/sdk",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
   "description": "John Antibot client for the DataDome, Cloudflare and reCAPTCHA APIs.",
   "license": "MIT",

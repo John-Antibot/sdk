@@ -5,9 +5,9 @@ Clients for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudfl
 | Language | Install | Docs |
 |---|---|---|
 | Go | `go get github.com/John-Antibot/sdk@latest` | below |
-| TypeScript | `npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.0/john-antibot-sdk-0.8.0.tgz` | [typescript](typescript) |
-| Python | `pip install "git+https://github.com/John-Antibot/sdk.git@v0.8.0#subdirectory=python"` | [python](python) |
-| Rust | `cargo add john-antibot --git https://github.com/John-Antibot/sdk --tag v0.8.0` | [rust](rust) |
+| TypeScript | `npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.1/john-antibot-sdk-0.8.1.tgz` | [typescript](typescript) |
+| Python | `pip install "git+https://github.com/John-Antibot/sdk.git@v0.8.1#subdirectory=python"` | [python](python) |
+| Rust | `cargo add john-antibot --git https://github.com/John-Antibot/sdk --tag v0.8.1` | [rust](rust) |
 
 # Go
 
@@ -16,7 +16,7 @@ Moved from `github.com/John-Avenue/john-antibot-sdk` in v0.6.0: change the impor
 | Package | |
 |---|---|
 | `datadome` | Generators for tags, interstitial and slider payloads. |
-| `cloudflare` | Cloudflare challenge and Turnstile solves, as jobs on our side through your proxy. |
+| `cloudflare` | Cloudflare challenge, Turnstile and JSD solves, as jobs on our side through your proxy. |
 | `recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs on our side through your proxy. |
 | `account` | The balance of your key's account. |
 | `flow` | Complete DataDome flows over your own HTTP transport. |
