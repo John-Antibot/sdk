@@ -4,7 +4,7 @@ Rust client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Clo
 
 ```toml
 [dependencies]
-john-antibot = { git = "https://github.com/John-Antibot/sdk", tag = "v0.8.0" }
+john-antibot = { git = "https://github.com/John-Antibot/sdk", tag = "v0.8.1" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 

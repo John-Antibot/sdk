@@ -1,6 +1,6 @@
 [project]
 name = "john-antibot"
-version = "0.8.0"
+version = "0.8.1"
 description = "Python client for the John Antibot DataDome, Cloudflare and reCAPTCHA APIs."
 readme = "README.md"
 license = "MIT"

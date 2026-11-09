@@ -24,6 +24,19 @@ type ChallengeInput struct {
 	Timeout time.Duration
 }
 
+// JSDInput is a page whose detection script (the one the edge appends to pages it serves) is to run for its clearance.
+// The page must load: if it serves a managed challenge, the job clears that first, in the same solve.
+type JSDInput struct {
+	// URL is the page carrying the detection script. The site must be approved for your key.
+	URL string
+	// Proxy, UserAgent, Timezone, Session and Timeout are as in ChallengeInput.
+	Proxy     string
+	UserAgent string
+	Timezone  string
+	Session   string
+	Timeout   time.Duration
+}
+
 // TurnstileInput is a Turnstile widget on a page.
 type TurnstileInput struct {
 	// PageURL is the page with the widget. The site must be approved for your key.
@@ -51,7 +64,7 @@ type Cookie struct {
 
 // Result is what a finished job holds.
 type Result struct {
-	// Payload is "cf_clearance=<value>" for a challenge and the token for Turnstile.
+	// Payload is "cf_clearance=<value>" for a challenge and for jsd, and the token for Turnstile.
 	Payload string `json:"payload"`
 	// UserAgent is the browser the clearance is for: send it in each request to the site.
 	UserAgent string `json:"userAgent"`

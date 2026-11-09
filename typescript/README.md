@@ -3,7 +3,7 @@
 TypeScript client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance. No dependencies: Node 18.17+ and Bun.
 
 ```bash
-npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.0/john-antibot-sdk-0.8.0.tgz
+npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.1/john-antibot-sdk-0.8.1.tgz
 ```
 
 | Class | |

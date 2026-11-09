@@ -5,9 +5,9 @@ Clients for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudfl
 | Language | Install | Docs |
 |---|---|---|
 | Go | `go get github.com/John-Antibot/sdk@latest` | below |
-| TypeScript | `npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.0/john-antibot-sdk-0.8.0.tgz` | [typescript](typescript) |
-| Python | `pip install "git+https://github.com/John-Antibot/sdk.git@v0.8.0#subdirectory=python"` | [python](python) |
-| Rust | `cargo add john-antibot --git https://github.com/John-Antibot/sdk --tag v0.8.0` | [rust](rust) |
+| TypeScript | `npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.1/john-antibot-sdk-0.8.1.tgz` | [typescript](typescript) |
+| Python | `pip install "git+https://github.com/John-Antibot/sdk.git@v0.8.1#subdirectory=python"` | [python](python) |
+| Rust | `cargo add john-antibot --git https://github.com/John-Antibot/sdk --tag v0.8.1` | [rust](rust) |
 
 # Go
 
@@ -16,7 +16,7 @@ Moved from `github.com/John-Avenue/john-antibot-sdk` in v0.6.0: change the impor
 | Package | |
 |---|---|
 | `datadome` | Generators for tags, interstitial and slider payloads. |
-| `cloudflare` | Cloudflare challenge and Turnstile solves, as jobs on our side through your proxy. |
+| `cloudflare` | Cloudflare challenge, Turnstile and JSD solves, as jobs on our side through your proxy. |
 | `recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs on our side through your proxy. |
 | `account` | The balance of your key's account. |
 | `flow` | Complete DataDome flows over your own HTTP transport. |
@@ -85,6 +85,9 @@ res, err := cf.SolveChallenge(ctx, &cloudflare.ChallengeInput{
 
 // A Turnstile widget: the token.
 res, err = cf.SolveTurnstile(ctx, &cloudflare.TurnstileInput{PageURL: "https://www.example.com/login", SiteKey: "0x4AAAAAAA…", Proxy: proxy})
+
+// The clearance a page's detection script (jsd) grants, for sites that want it on top of a cleared challenge.
+res, err = cf.SolveJSD(ctx, &cloudflare.JSDInput{URL: "https://www.example.com/", Proxy: proxy})
 ```
 
 | Result | Use |
@@ -95,7 +98,7 @@ res, err = cf.SolveTurnstile(ctx, &cloudflare.TurnstileInput{PageURL: "https://w
 | `res.UserAgent` | Send it in each request to the site, from the same proxy. |
 | `res.ExitIP` | The address the site saw. |
 
-A solve takes about 7 seconds. `ctx` bounds the wait, not the job. `SubmitChallenge`, `SubmitTurnstile`, `Job` and `Wait` do the same in steps.
+A solve takes about 7 seconds. `ctx` bounds the wait, not the job. `SubmitChallenge`, `SubmitTurnstile`, `SubmitJSD`, `Job` and `Wait` do the same in steps. An account runs 50 jobs at once; jobs past that wait queued for one of the account's own to finish, so under a burst a solve takes longer rather than failing — bound the wait with `ctx`.
 
 ### Proxy
 
@@ -114,7 +117,7 @@ The price is charged when the job is sent and returned if it fails or is decline
 | `IsNoChallenge` | The page serves no challenge. |
 | `IsInsufficientBalance` | The balance is below the price. |
 | `IsSiteNotApproved` | The site is not approved for your key. |
-| `IsRateLimited` | 50 open jobs per account. |
+| `IsRateLimited` | Kept for compatibility: jobs are no longer refused for concurrency (they queue), so a solve does not meet this. |
 | `IsBadRequest` | The input was refused. |
 
 ## reCAPTCHA
@@ -155,7 +158,7 @@ The price is charged when the job is sent and returned if it fails. A job that e
 |---|---|
 | `recaptcha.IsInsufficientBalance(err)` | The balance is below the price. |
 | `IsSiteNotApproved` | The site is not approved for your key. |
-| `IsRateLimited` | The account has too many open jobs: wait for one to finish. |
+| `IsRateLimited` | Kept for compatibility: jobs are no longer refused for concurrency (they queue), so a solve does not meet this. |
 | `IsBadRequest` | The input was refused: the proxy, the site key, a field. |
 | `IsDeclined` | The API turned the attempt down and did not charge it. Send another. |
 
