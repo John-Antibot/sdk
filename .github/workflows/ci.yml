@@ -1,0 +1,63 @@
+# Each SDK's suites on every PR and push to main: Go at the root, TypeScript, Python and Rust in their directories. No job calls
+# the live API (the live tests skip without their environment).
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  go:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test -race -count=1 ./...
+
+  typescript:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: oven-sh/setup-bun@v2
+      - run: npm ci
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+      - run: bun test
+
+  python:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python: ["3.9", "3.13"]
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv run --python ${{ matrix.python }} pytest
+      - run: uv run --python ${{ matrix.python }} --with mypy mypy --strict src
+      - run: uv build
+
+  rust:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: rust
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup show # installs the toolchain rust-toolchain.toml pins
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
