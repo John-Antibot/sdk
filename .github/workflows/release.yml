@@ -1,0 +1,30 @@
+# A published release gets the TypeScript SDK's packed tarball, which `npm install <its URL>` installs (npm cannot install a
+# subdirectory of a repository, and nothing here goes to a registry). Python and Rust install from the tag itself.
+name: release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  typescript:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: |
+          want="${GITHUB_REF_NAME#v}"
+          [ "$(jq -r .version package.json)" = "$want" ] || { echo "::error::package.json is $(jq -r .version package.json), the tag is $GITHUB_REF_NAME"; exit 1; }
+          npm pack
+          gh release upload "$GITHUB_REF_NAME" "john-antibot-sdk-$want.tgz" --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
