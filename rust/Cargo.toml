@@ -1,0 +1,28 @@
+[package]
+name = "john-antibot"
+version = "0.8.0"
+publish = false
+edition = "2024"
+rust-version = "1.88"
+description = "Client for the John Antibot DataDome, Cloudflare and reCAPTCHA APIs."
+license = "MIT"
+repository = "https://github.com/John-Antibot/sdk"
+readme = "README.md"
+keywords = ["datadome", "cloudflare", "recaptcha", "turnstile"]
+categories = ["api-bindings", "web-programming::http-client"]
+exclude = ["/.gitignore", "/rust-toolchain.toml"]
+
+[lib]
+name = "john_antibot"
+
+[dependencies]
+flate2 = "1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+tokio = { version = "1", features = ["time"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "io-util", "time"] }

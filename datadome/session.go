@@ -104,6 +104,12 @@ func (s *Session) GenerateTags(ctx context.Context, in *TagsInput) (*TagsRespons
 	if in.Script != "" {
 		req["scriptHash"] = scriptHash(in.Script)
 	}
+	if len(in.LoadedFontFamilies) > 0 {
+		req["loadedFontFamilies"] = in.LoadedFontFamilies
+	}
+	if in.TagsScriptURL != "" {
+		req["tagsScriptUrl"] = in.TagsScriptURL
+	}
 	referer := nonEmpty(in.Referer, s.Referer)
 	if referer == "" {
 		return nil, errors.New("datadome: TagsInput.Referer (or Session.Referer) is required: the page the tags run on")

@@ -1,10 +1,15 @@
-# John Antibot Go SDK
+# John Antibot SDKs
 
-Go client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
+Clients for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
 
-```bash
-go get github.com/John-Antibot/sdk@latest
-```
+| Language | Install | Docs |
+|---|---|---|
+| Go | `go get github.com/John-Antibot/sdk@latest` | below |
+| TypeScript | `npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.0/john-antibot-sdk-0.8.0.tgz` | [typescript](typescript) |
+| Python | `pip install "git+https://github.com/John-Antibot/sdk.git@v0.8.0#subdirectory=python"` | [python](python) |
+| Rust | `cargo add john-antibot --git https://github.com/John-Antibot/sdk --tag v0.8.0` | [rust](rust) |
+
+# Go
 
 Moved from `github.com/John-Avenue/john-antibot-sdk` in v0.6.0: change the import path to `github.com/John-Antibot/sdk`; v0.5.x stays at the old path.
 
@@ -26,7 +31,8 @@ client, _ := datadome.New(datadome.Config{APIKey: os.Getenv("JOHNANTIBOT_API_KEY
 session := client.Session(datadome.Session{Referer: "https://seatgeek.com/"})
 
 // Tags: ch, then le.
-tags, err := session.GenerateTags(ctx, &datadome.TagsInput{Event: datadome.EventCH, Cookie: cid, SiteKey: ddk})
+// LoadedFontFamilies: the page's @font-face families (required, except for sites the service already knows).
+tags, err := session.GenerateTags(ctx, &datadome.TagsInput{Event: datadome.EventCH, Cookie: cid, SiteKey: ddk, LoadedFontFamilies: fonts})
 
 // Interstitial: the page, the URL you loaded, the script it loads (only its SHA-256 is sent).
 inter, err := session.GenerateInterstitial(ctx, &datadome.InterstitialInput{HTML: html, DeviceLink: link, Script: script})

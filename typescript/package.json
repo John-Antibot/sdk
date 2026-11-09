@@ -1,0 +1,39 @@
+{
+  "name": "@john-antibot/sdk",
+  "version": "0.8.0",
+  "private": true,
+  "description": "John Antibot client for the DataDome, Cloudflare and reCAPTCHA APIs.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/John-Antibot/sdk.git",
+    "directory": "typescript"
+  },
+  "homepage": "https://antibot.johnavenue.com",
+  "author": "John Avenue",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test test/*.test.ts",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}
