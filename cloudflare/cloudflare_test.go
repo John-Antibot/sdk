@@ -38,6 +38,7 @@ func (a *api) handler() http.Handler {
 		_, _ = io.WriteString(w, `{"id":"job_1","state":"queued"}`)
 	}
 	mux.HandleFunc("POST /challenge", submit)
+	mux.HandleFunc("POST /jsd", submit)
 	mux.HandleFunc("POST /turnstile", submit)
 	mux.HandleFunc("GET /jobs/job_1", func(w http.ResponseWriter, r *http.Request) {
 		a.waits = append(a.waits, r.URL.Query().Get("wait"))
@@ -98,6 +99,21 @@ func TestSolveTurnstile(t *testing.T) {
 	}
 	if a.submitted["pageUrl"] != "https://example.com/login" || a.submitted["sitekey"] != "0x4AAA" || a.submitted["action"] != "login" || a.submitted["cData"] != nil {
 		t.Errorf("submitted %v", a.submitted)
+	}
+}
+
+func TestSolveJSD(t *testing.T) {
+	a := &api{t: t, terminal: doneJob}
+	c := newClient(t, a)
+	res, err := c.SolveJSD(context.Background(), &JSDInput{URL: "https://example.com/event", Proxy: "8.8.8.8:80", Timezone: "America/New_York"})
+	if err != nil || res.Clearance() != "abc123" {
+		t.Fatalf("%+v %v", res, err)
+	}
+	if a.submitted["url"] != "https://example.com/event" || a.submitted["timezone"] != "America/New_York" || a.submitted["sitekey"] != nil || a.submitted["pageUrl"] != nil {
+		t.Errorf("submitted %v", a.submitted)
+	}
+	if _, err := c.SolveJSD(context.Background(), &JSDInput{URL: "https://example.com/"}); err == nil {
+		t.Error("a jsd solve without a proxy was sent")
 	}
 }
 

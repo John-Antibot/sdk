@@ -45,7 +45,8 @@ func IsInsufficientBalance(err error) bool { return apiStatus(err, http.StatusPa
 // IsSiteNotApproved reports whether err is the API refusing a site that is not approved for the key (HTTP 403).
 func IsSiteNotApproved(err error) bool { return apiStatus(err, http.StatusForbidden) }
 
-// IsRateLimited reports whether err is the API holding the account at its open jobs (HTTP 429): wait for one to finish.
+// IsRateLimited reports whether err is an HTTP 429 from the API. Jobs are not refused for concurrency — an account's jobs past
+// its running limit wait queued — so a solve no longer meets this; it is kept for callers that already branch on it.
 func IsRateLimited(err error) bool { return apiStatus(err, http.StatusTooManyRequests) }
 
 // IsBadRequest reports whether err is the API refusing the input (HTTP 400): the proxy, the site key, a field.

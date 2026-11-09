@@ -1,9 +1,13 @@
-// Package cloudflare is a client for the John Antibot Cloudflare API: clear a challenge page or solve a Turnstile widget through your own proxy.
+// Package cloudflare is a client for the John Antibot Cloudflare API: clear a challenge page, solve a Turnstile widget, or earn the clearance
+// a page's detection script (jsd) grants, through your own proxy.
 //
 // A solve is a job. You send the page and the proxy, the API answers at once with a job id, and the job runs on our side: every request of
-// the solve goes through your proxy, so the clearance is for the address that proxy exits from. SolveChallenge and SolveTurnstile send a job and
-// wait for it; SubmitChallenge, SubmitTurnstile, Job and Wait are the same in steps. Spend the clearance from the same address, with
-// Result.UserAgent.
+// the solve goes through your proxy, so the clearance is for the address that proxy exits from. SolveChallenge, SolveTurnstile and SolveJSD
+// send a job and wait for it; SubmitChallenge, SubmitTurnstile, SubmitJSD, Job and Wait are the same in steps. Spend the clearance from the
+// same address, with Result.UserAgent.
+//
+// An account runs a limited number of jobs at once (50 on the hosted API); jobs past it are taken on and wait queued for one of the
+// account's own to finish, so a burst takes longer rather than failing. Bound the wait with the context you pass.
 package cloudflare
 
 import (
@@ -99,6 +103,15 @@ func (c *Client) SolveTurnstile(ctx context.Context, in *TurnstileInput) (*Resul
 	return c.Wait(ctx, job)
 }
 
+// SolveJSD runs the detection script of the page at in.URL and waits for the clearance it is granted.
+func (c *Client) SolveJSD(ctx context.Context, in *JSDInput) (*Result, error) {
+	job, err := c.SubmitJSD(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return c.Wait(ctx, job)
+}
+
 // SubmitChallenge sends a challenge job and returns it queued: its ID is what Job and Wait take. The price is charged now and returned if the job
 // fails or is declined.
 func (c *Client) SubmitChallenge(ctx context.Context, in *ChallengeInput) (*Job, error) {
@@ -109,6 +122,19 @@ func (c *Client) SubmitChallenge(ctx context.Context, in *ChallengeInput) (*Job,
 		return nil, errors.New("cloudflare: a challenge needs a URL and a proxy")
 	}
 	return c.submit(ctx, "/challenge", map[string]any{
+		"url": in.URL, "proxy": in.Proxy, "userAgent": in.UserAgent, "timezone": in.Timezone, "session": in.Session, "timeoutMs": millis(in.Timeout),
+	})
+}
+
+// SubmitJSD sends a jsd job and returns it queued.
+func (c *Client) SubmitJSD(ctx context.Context, in *JSDInput) (*Job, error) {
+	if in == nil {
+		return nil, errors.New("cloudflare: jsd input is nil")
+	}
+	if in.URL == "" || in.Proxy == "" {
+		return nil, errors.New("cloudflare: a jsd solve needs a URL and a proxy")
+	}
+	return c.submit(ctx, "/jsd", map[string]any{
 		"url": in.URL, "proxy": in.Proxy, "userAgent": in.UserAgent, "timezone": in.Timezone, "session": in.Session, "timeoutMs": millis(in.Timeout),
 	})
 }
