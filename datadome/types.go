@@ -18,6 +18,10 @@ type TagsInput struct {
 	SiteKey string
 	// Version is the optional tags.js version (ddv).
 	Version string
+	// LoadedFontFamilies are the @font-face families the page loaded. Required, except for sites the service already knows.
+	LoadedFontFamilies []string
+	// TagsScriptURL is the site's tags.js, when it is not https://datadome.<site>/tags.js.
+	TagsScriptURL string
 	// Script is the source of the tags.js the page loaded, optional: the service runs that build, also when
 	// the site still serves an older one. Only its SHA-256 is sent. Empty: the current build.
 	Script string

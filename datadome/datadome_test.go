@@ -126,6 +126,16 @@ func TestGenerateTagsWire(t *testing.T) {
 	if got["scriptHash"] != scriptHash("/*tags*/") || got["script"] != nil {
 		t.Errorf("tags wire scriptHash = %v script = %v", got["scriptHash"], got["script"])
 	}
+	if _, ok := got["loadedFontFamilies"]; ok {
+		t.Errorf("no fonts, no loadedFontFamilies: %v", got["loadedFontFamilies"])
+	}
+	in := &TagsInput{Event: EventCH, Cookie: "c", SiteKey: "KEY", LoadedFontFamilies: []string{"Inter", "Inter Fallback"}, TagsScriptURL: "https://js.datadome.co/tags.js"}
+	if _, err := session.GenerateTags(context.Background(), in); err != nil {
+		t.Fatal(err)
+	}
+	if fonts, _ := got["loadedFontFamilies"].([]any); len(fonts) != 2 || fonts[0] != "Inter" || got["tagsScriptUrl"] != "https://js.datadome.co/tags.js" {
+		t.Errorf("tags wire loadedFontFamilies = %v tagsScriptUrl = %v", got["loadedFontFamilies"], got["tagsScriptUrl"])
+	}
 }
 
 func TestAPIErrorClassification(t *testing.T) {
