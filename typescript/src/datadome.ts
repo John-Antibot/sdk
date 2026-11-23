@@ -129,9 +129,9 @@ export function challengeLink(body: string, pageUrl: string, cookie = ''): { lin
   return undefined
 }
 
-const challengeScriptRe = /<script[^>]+src="(https:\/\/ct\.captcha-delivery\.com\/(?:interstitial|captcha)[^"]*\.js)"/
+const challengeScriptRe = /<script[^>]+src="(https:[^"]*\.js)"/
 
-/** The script a challenge page loads, or "" when the page inlines it. Load it right after the page and pass its source as `script`. */
+/** The script a challenge page loads (its first external script, whatever the file name), or "" when the page inlines it. Load it right after the page and pass its source as `script`. */
 export const challengeScriptUrl = (html: string): string => challengeScriptRe.exec(html)?.[1] ?? ''
 
 /** A captcha page that is the unsolvable hardblock variant. */

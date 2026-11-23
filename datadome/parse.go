@@ -96,9 +96,11 @@ func ParseDDM(html string) map[string]string {
 	return out
 }
 
+var challengeScriptRe = regexp.MustCompile(`<script[^>]+src="(https:[^"]*\.js)"`)
+
 // ParseChallengeScriptURL returns the page's external script URL; ok is false if none.
 func ParseChallengeScriptURL(html string) (string, bool) {
-	m := regexp.MustCompile(`<script[^>]+src="(https:[^"]*\.js)"`).FindStringSubmatch(html)
+	m := challengeScriptRe.FindStringSubmatch(html)
 	if m == nil {
 		return "", false
 	}
@@ -118,14 +120,12 @@ func orderedQuery(pairs [][2]string) string {
 	return strings.Join(parts, "&")
 }
 
-var challengeScriptRe = regexp.MustCompile(`<script[^>]+src="(https://ct\.captcha-delivery\.com/(?:interstitial|captcha)[^"]*\.js)"`)
-
 // ChallengeScriptURL returns the challenge script URL a page loads, or "" if inlined.
+// It is the page's first external script, whatever its file name (builds from
+// 2026-11-23 load a hashed name like ct.captcha-delivery.com/5d512141a346e3bf.js).
 func ChallengeScriptURL(html string) string {
-	if m := challengeScriptRe.FindStringSubmatch(html); m != nil {
-		return m[1]
-	}
-	return ""
+	u, _ := ParseChallengeScriptURL(html)
+	return u
 }
 
 var challengeLinkRe = regexp.MustCompile(`https://geo\.captcha-delivery\.com/(?:captcha|interstitial)/\?[^"'\\\s<]+`)

@@ -222,6 +222,9 @@ func TestInterstitialSendsClientScript(t *testing.T) {
 	if got := ChallengeScriptURL(interstitialHTML); got != "https://ct.captcha-delivery.com/interstitial.1.0.js" {
 		t.Fatalf("ChallengeScriptURL = %q", got)
 	}
+	if got := ChallengeScriptURL(`<script defer src="https://ct.captcha-delivery.com/5d512141a346e3bf.js"></script>`); got != "https://ct.captcha-delivery.com/5d512141a346e3bf.js" {
+		t.Fatalf("hashed-name script URL = %q", got)
+	}
 	if got := ChallengeScriptURL(`<script>var ddm = {};</script>`); got != "" {
 		t.Fatalf("inline page script URL = %q, want empty", got)
 	}

@@ -204,9 +204,10 @@ pub fn build_captcha_url(dd: &DdObject, referer: &str) -> String {
     format!("{GEO_ORIGIN}/captcha/?{q}")
 }
 
-/// The challenge script URL a challenge page loads; `None` when it is inline.
+/// The challenge script URL a challenge page loads (its first external script,
+/// whatever the file name); `None` when it is inline.
 pub fn challenge_script_url(html: &str) -> Option<String> {
-    const SRC: &str = "src=\"https://ct.captcha-delivery.com/";
+    const SRC: &str = "src=\"https:";
     for (i, _) in html.match_indices("<script") {
         let tag_start = i + "<script".len();
         let tag_end = html[tag_start..]
@@ -218,12 +219,8 @@ pub fn challenge_script_url(html: &str) -> Option<String> {
         {
             let url = &html[tag_start + j + "src=\"".len()..];
             let Some(end) = url.find('"') else { continue };
-            let url = &url[..end];
-            let path = &url[SRC.len() - "src=\"".len()..];
-            if (path.starts_with("interstitial") || path.starts_with("captcha"))
-                && url.ends_with(".js")
-            {
-                return Some(url.to_string());
+            if url[..end].ends_with(".js") {
+                return Some(url[..end].to_string());
             }
         }
     }
@@ -498,18 +495,13 @@ mod tests {
         );
         assert_eq!(challenge_script_url("<script>var ddm = {};</script>"), None);
         assert_eq!(
-            challenge_script_url(r#"<script src="https://ct.captcha-delivery.com/c.js"></script>"#),
-            None
+            challenge_script_url(r#"<script defer src="https://ct.captcha-delivery.com/5d512141a346e3bf.js"></script>"#)
+                .as_deref(),
+            Some("https://ct.captcha-delivery.com/5d512141a346e3bf.js")
         );
         assert_eq!(
             challenge_script_url(
                 r#"<script src="https://ct.captcha-delivery.com/captcha.js?x"></script>"#
-            ),
-            None
-        );
-        assert_eq!(
-            challenge_script_url(
-                r#"<script src="https://ct.captcha-delivery.com/tags.js"></script>"#
             ),
             None
         );
