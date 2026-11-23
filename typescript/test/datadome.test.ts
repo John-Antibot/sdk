@@ -159,6 +159,7 @@ test('interstitial: a reply that is not a form is refused', async () => {
 
 test('interstitial: the hash of the script the caller loaded, never the script', async () => {
   assert.equal(challengeScriptUrl(interstitialHTML), 'https://ct.captcha-delivery.com/interstitial.1.0.js')
+  assert.equal(challengeScriptUrl('<script defer src="https://ct.captcha-delivery.com/5d512141a346e3bf.js"></script>'), 'https://ct.captcha-delivery.com/5d512141a346e3bf.js')
   assert.equal(challengeScriptUrl('<script>var ddm = {};</script>'), '')
   const srv = await serve(() => ({ body: { payload: 'cid=x', session: 's' } }))
   await new DataDome({ endpoint: srv.url }).session({ sessionKey: 's' }).generateInterstitial({ html: interstitialHTML, script: '/*challenge script*/', deviceLink })

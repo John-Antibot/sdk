@@ -154,13 +154,13 @@ def build_captcha_url(dd: DDObject, referer: str) -> str:
     return f"{GEO_ORIGIN}/captcha/?{q}&dm=cd"
 
 
-_CHALLENGE_SCRIPT = re.compile(r'<script[^>]+src="(https://ct\.captcha-delivery\.com/(?:interstitial|captcha)[^"]*\.js)"')
+_CHALLENGE_SCRIPT = re.compile(r'<script[^>]+src="(https:[^"]*\.js)"')
 _CHALLENGE_LINK = re.compile(r"""https://geo\.captcha-delivery\.com/(?:captcha|interstitial)/\?[^"'\\\s<]+""")
 _HARDBLOCK_PAGE = re.compile(r"""responseType\s*=\s*['"]hardblock['"]""")
 
 
 def challenge_script_url(html: str) -> str:
-    """The script an interstitial or captcha page loads, or "" when it is inline. Load it right after the page."""
+    """The script an interstitial or captcha page loads (its first external script, whatever the file name), or "" when it is inline. Load it right after the page."""
     m = _CHALLENGE_SCRIPT.search(html)
     return m.group(1) if m else ""
 

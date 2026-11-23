@@ -269,6 +269,7 @@ def test_parsers():
     assert c == dd.GEO_ORIGIN + "/captcha/?initialCid=C&hash=H&cid=K&t=fe&referer=https%3A%2F%2Fwww.example.com%2F&s=1&dm=cd"
     assert dd.parse_dd("var dd={'t':'bv'}").hard_blocked
     assert dd.challenge_script_url(INTERSTITIAL_HTML) == "https://ct.captcha-delivery.com/interstitial.1.0.js"
+    assert dd.challenge_script_url('<script defer src="https://ct.captcha-delivery.com/5d512141a346e3bf.js"></script>') == "https://ct.captcha-delivery.com/5d512141a346e3bf.js"
     assert dd.challenge_script_url("<script>var ddm = {};</script>") == ""
     assert dd.is_hardblock_page("var responseType = 'hardblock';") and not dd.is_hardblock_page("<html></html>")
 
