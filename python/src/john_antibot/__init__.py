@@ -22,7 +22,7 @@ from .errors import (
     is_site_not_approved,
 )
 
-__version__ = "0.8.2"
+__version__ = "0.9.0"
 
 __all__ = [
     "DEFAULT_ENDPOINT",

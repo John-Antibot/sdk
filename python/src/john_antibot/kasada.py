@@ -3,25 +3,102 @@
 from __future__ import annotations
 
 import base64
+import hashlib
+import json
+import os
+import random
+import time
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from ._http import Call, Op, _Async, _Sync
 
-__all__ = ["AsyncKasada", "Kasada", "PayloadResult", "VersionResult"]
+__all__ = ["AsyncKasada", "CDParams", "Kasada", "PayloadResult", "VersionResult"]
 
 SERVICE = "kasada"
 PATH = "/v1/kasada/payload"
 
 
+def _sha256(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+def _cd_answers(first: str, difficulty: int, rounds: int) -> List[int]:
+    """p.js's proof of work: per round, the first nonce n whose sha256("<n>, <previous hash>") scores at least
+    difficulty/rounds (score = 2^52 over the first 13 hex digits, plus one); the passing hash starts the next round."""
+    target = difficulty / rounds
+    digest = _sha256(first)
+    answers: List[int] = []
+    while len(answers) < rounds:
+        n = 1
+        while True:
+            nxt = _sha256(f"{n}, {digest}")
+            if (1 << 52) / (int(nxt[:13], 16) + 1) >= target:
+                answers.append(n)
+                digest = nxt
+                break
+            n += 1
+    return answers
+
+
+@dataclass
+class CDParams:
+    """What x-kpsdk-cd is made from besides the session. They change only when the site's p.js does."""
+
+    difficulty: int
+    subchallenge_count: int
+    crypto_customer_key: str = ""
+    seed_suffix: str = ""
+    label: str = "tp-v2-input"
+    ct_prefix: bool = True
+
+    def header(self, ct: str, st: int) -> str:
+        """x-kpsdk-cd for one protected request. Computed here: about ten SHA-256 hashes, no API call, no charge.
+
+        ``ct`` is the session's current x-kpsdk-ct (the one sent on this very request; each reply rotates it) and
+        ``st`` the x-kpsdk-st header /tl answered with, in milliseconds. Make a new header for every request."""
+        if self.difficulty < 1 or self.subchallenge_count < 1:
+            raise ValueError("kasada: difficulty and subchallenge_count must be positive")
+        if st <= 0:
+            raise ValueError("kasada: st must be the x-kpsdk-st value /tl answered with")
+        label = self.label or "tp-v2-input"
+        if self.ct_prefix:
+            if len(ct) < 16:
+                raise ValueError("kasada: ct must be the x-kpsdk-ct value (at least 16 characters)")
+            label += ct[:16]
+        ident = os.urandom(16).hex()
+        work_time = int(time.time() * 1000) - 10 - random.randrange(41)
+        first = f"{label}, {work_time}, {ident}"
+        if self.crypto_customer_key:
+            first += f", {self.crypto_customer_key}"
+        if self.seed_suffix:
+            first += f", {self.seed_suffix}"
+        # a real page's clock reads st a little before or after the server's, the same for the whole session
+        d = hashlib.sha256(str(st).encode()).digest()[0] * 90 // 255 - 10
+        return json.dumps(
+            {
+                "workTime": work_time, "id": ident, "answers": _cd_answers(first, self.difficulty, self.subchallenge_count),
+                "duration": (200 + random.randrange(551)) / 10, "d": d, "st": st, "rst": st + d,
+            },
+            separators=(",", ":"),
+        )
+
+
 @dataclass
 class VersionResult:
-    """The x-kpsdk-v value p.js stamps on /fp."""
+    """The x-kpsdk-v value p.js stamps on /fp, and what x-kpsdk-cd is made from (see :meth:`cd_header`)."""
 
     version: str
     payload: str = ""
     session: str = ""
     user_agent: str = ""
+    cd: Optional[CDParams] = None
+
+    def cd_header(self, ct: str, st: int) -> str:
+        """x-kpsdk-cd for one protected request, computed locally (no API call, no charge); see :meth:`CDParams.header`."""
+        if self.cd is None:
+            raise ValueError("kasada: this version has no cd parameters (p.js's proof of work could not be read)")
+        return self.cd.header(ct, st)
 
 
 @dataclass
@@ -78,11 +155,23 @@ def _version(body: Dict[str, Any]) -> Op[VersionResult]:
     payload = data.get("payload")
     session = data.get("session")
     user_agent = data.get("userAgent")
+    raw_cd = data.get("cd")
+    cd: Optional[CDParams] = None
+    if isinstance(raw_cd, dict) and isinstance(raw_cd.get("difficulty"), int) and isinstance(raw_cd.get("subchallengeCount"), int):
+        cd = CDParams(
+            difficulty=raw_cd["difficulty"],
+            subchallenge_count=raw_cd["subchallengeCount"],
+            crypto_customer_key=_text(raw_cd, "cryptoCustomerKey"),
+            seed_suffix=_text(raw_cd, "seedSuffix"),
+            label=_text(raw_cd, "label") or "tp-v2-input",
+            ct_prefix=raw_cd.get("ctPrefix") is not False,
+        )
     return VersionResult(
         version=version,
         payload=payload if isinstance(payload, str) else version,
         session=session if isinstance(session, str) else "",
         user_agent=user_agent if isinstance(user_agent, str) else "",
+        cd=cd,
     )
 
 

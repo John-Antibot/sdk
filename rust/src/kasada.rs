@@ -28,6 +28,7 @@ use std::time::Duration;
 use base64::Engine;
 use serde::Deserialize;
 use serde_json::Map;
+use sha2::{Digest, Sha256};
 
 use crate::http::{Builder, Core, put};
 use crate::{Error, Result};
@@ -85,11 +86,127 @@ pub struct VersionInput {
     pub session: Option<String>,
 }
 
-/// The `x-kpsdk-v` value p.js stamps on `/fp`.
+/// What `x-kpsdk-cd` is made from besides the session. They change only when the site's p.js does.
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct CdParams {
+    /// The sum of the rounds' targets.
+    pub difficulty: u32,
+    /// How many rounds of proof of work.
+    pub subchallenge_count: u32,
+    /// The site's key, hashed into the first round.
+    pub crypto_customer_key: String,
+    /// An extra string hashed after the key; usually empty.
+    pub seed_suffix: String,
+    /// What p.js hashes first, for example `tp-v2-input`.
+    pub label: String,
+    /// Whether the label is followed by the first 16 characters of `ct` (a desktop browser's is).
+    pub ct_prefix: bool,
+}
+
+fn sha256_hex(text: &str) -> String {
+    Sha256::digest(text.as_bytes())
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect()
+}
+
+/// p.js's proof of work: per round, the first nonce `n` whose `sha256("<n>, <previous hash>")` scores at least
+/// `difficulty / rounds` (score = 2^52 over the first 13 hex digits, plus one); the passing hash starts the next round.
+fn cd_answers(first: &str, difficulty: u32, rounds: u32) -> Vec<u32> {
+    let target = f64::from(difficulty) / f64::from(rounds);
+    let mut hash = sha256_hex(first);
+    let mut answers = Vec::new();
+    while answers.len() < rounds as usize {
+        let mut n = 1u32;
+        loop {
+            let next = sha256_hex(&format!("{n}, {hash}"));
+            let prefix = u64::from_str_radix(&next[..13], 16).unwrap_or(0);
+            if (1u64 << 52) as f64 / (prefix + 1) as f64 >= target {
+                answers.push(n);
+                hash = next;
+                break;
+            }
+            n += 1;
+        }
+    }
+    answers
+}
+
+/// Random bytes without a dependency: std's per-process random hasher keys, mixed with the clock.
+fn random_u64() -> u64 {
+    use std::hash::{BuildHasher, Hasher};
+    let mut h = std::collections::hash_map::RandomState::new().build_hasher();
+    h.write_u128(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_nanos()),
+    );
+    h.finish()
+}
+
+impl CdParams {
+    /// `x-kpsdk-cd` for one protected request. Computed here: about ten SHA-256 hashes, no API call, no charge.
+    ///
+    /// `ct` is the session's current `x-kpsdk-ct` (the one sent on this very request; each reply rotates it) and `st`
+    /// the `x-kpsdk-st` header `/tl` answered with, in milliseconds. Make a new header for every request.
+    pub fn header(&self, ct: &str, st: i64) -> Result<String> {
+        if self.difficulty < 1 || self.subchallenge_count < 1 {
+            return Err(Error::Input(
+                "kasada: difficulty and subchallenge_count must be positive".into(),
+            ));
+        }
+        if st <= 0 {
+            return Err(Error::Input(
+                "kasada: st must be the x-kpsdk-st value /tl answered with".into(),
+            ));
+        }
+        let mut label = if self.label.is_empty() {
+            "tp-v2-input".to_string()
+        } else {
+            self.label.clone()
+        };
+        if self.ct_prefix {
+            if ct.len() < 16 || !ct.is_char_boundary(16) {
+                return Err(Error::Input(
+                    "kasada: ct must be the x-kpsdk-ct value (at least 16 characters)".into(),
+                ));
+            }
+            label.push_str(&ct[..16]);
+        }
+        let id = format!("{:016x}{:016x}", random_u64(), random_u64());
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or(0, |d| d.as_millis() as i64);
+        let work_time = now - 10 - (random_u64() % 41) as i64;
+        let mut first = format!("{label}, {work_time}, {id}");
+        if !self.crypto_customer_key.is_empty() {
+            first.push_str(", ");
+            first.push_str(&self.crypto_customer_key);
+        }
+        if !self.seed_suffix.is_empty() {
+            first.push_str(", ");
+            first.push_str(&self.seed_suffix);
+        }
+        // a real page's clock reads st a little before or after the server's, the same for the whole session
+        let d = i64::from(Sha256::digest(st.to_string().as_bytes())[0]) * 90 / 255 - 10;
+        let duration = (200 + random_u64() % 551) as f64 / 10.0;
+        serde_json::to_string(&serde_json::json!({
+            "workTime": work_time, "id": id,
+            "answers": cd_answers(&first, self.difficulty, self.subchallenge_count),
+            "duration": duration, "d": d, "st": st, "rst": st + d,
+        }))
+        .map_err(|e| Error::Decode(e.to_string()))
+    }
+}
+
+/// The `x-kpsdk-v` value p.js stamps on `/fp`, and what `x-kpsdk-cd` is made from (see [`VersionResult::cd_header`]).
 #[derive(Debug, Clone, Default)]
 pub struct VersionResult {
     /// For example `j-1.2.1020`.
     pub version: String,
+    /// `None` when p.js's proof of work could not be read.
+    pub cd: Option<CdParams>,
     /// The same value under the API's generic payload field.
     pub payload: String,
     /// Send this as the next call's `session` to continue the identity.
@@ -98,11 +215,26 @@ pub struct VersionResult {
     pub user_agent: String,
 }
 
+impl VersionResult {
+    /// `x-kpsdk-cd` for one protected request, computed locally (no API call, no charge); see [`CdParams::header`].
+    pub fn cd_header(&self, ct: &str, st: i64) -> Result<String> {
+        self.cd
+            .as_ref()
+            .ok_or_else(|| {
+                Error::Input(
+                    "kasada: this version has no cd parameters (p.js's proof of work could not be read)".into(),
+                )
+            })?
+            .header(ct, st)
+    }
+}
+
 #[derive(Deserialize, Default)]
 #[serde(rename_all = "camelCase", default)]
 struct WireVersion {
     version: String,
     payload: String,
+    cd: Option<CdParams>,
     session: String,
     user_agent: String,
 }
@@ -186,6 +318,9 @@ impl Client {
                 wire.payload
             },
             version: wire.version,
+            cd: wire
+                .cd
+                .filter(|c| c.difficulty > 0 && c.subchallenge_count > 0),
             session: wire.session,
             user_agent: wire.user_agent,
         })
@@ -226,5 +361,75 @@ impl Client {
             session: wire.session,
             user_agent: wire.user_agent,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const NIKE_KEY: &str = "1760fa26d0fa116e2f26e90dc8b1379c3d9e946f650852b7f9925457ab77a14a";
+
+    // Two cds real Chrome stamped on nike's cart writes (2026-11-24), with the x-kpsdk-ct each request carried.
+    #[test]
+    fn answers_match_real_chrome() {
+        assert_eq!(
+            cd_answers(
+                &format!(
+                    "tp-v2-input045g90GkupSRHwee, 1795536575353, ce1a0639146179bcf6ab456ac1925359, {NIKE_KEY}"
+                ),
+                10,
+                2
+            ),
+            vec![13, 5]
+        );
+        assert_eq!(
+            cd_answers(
+                &format!(
+                    "tp-v2-input01pDYjEopgLXL7X4, 1795536579918, 2d455b029dc31363685cb443dce15ea4, {NIKE_KEY}"
+                ),
+                10,
+                2
+            ),
+            vec![5, 1]
+        );
+    }
+
+    #[test]
+    fn header_solves_its_own_input_and_keeps_d_per_session() {
+        let params = CdParams {
+            difficulty: 10,
+            subchallenge_count: 2,
+            crypto_customer_key: NIKE_KEY.into(),
+            label: "tp-v2-input".into(),
+            ct_prefix: true,
+            ..Default::default()
+        };
+        let ct = "045g90GkupSRHweeAkVbaHmX2luTJgqAGpoWX3q5D4o";
+        let st = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as i64
+            - 300;
+        let mut offsets = std::collections::BTreeSet::new();
+        for _ in 0..10 {
+            let cd: serde_json::Value =
+                serde_json::from_str(&params.header(ct, st).unwrap()).unwrap();
+            let first = format!(
+                "tp-v2-input{}, {}, {}, {NIKE_KEY}",
+                &ct[..16],
+                cd["workTime"],
+                cd["id"].as_str().unwrap()
+            );
+            assert_eq!(cd["answers"], serde_json::json!(cd_answers(&first, 10, 2)));
+            let d = cd["d"].as_i64().unwrap();
+            assert_eq!(cd["rst"].as_i64().unwrap() - cd["st"].as_i64().unwrap(), d);
+            assert!((-10..=80).contains(&d));
+            let duration = cd["duration"].as_f64().unwrap();
+            assert!((20.0..=75.0).contains(&duration));
+            offsets.insert(d);
+        }
+        assert_eq!(offsets.len(), 1);
+        assert!(VersionResult::default().cd_header(ct, st).is_err());
     }
 }
