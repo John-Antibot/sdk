@@ -1,10 +1,11 @@
-//! Client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
+//! Client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare, reCAPTCHA and Kasada APIs and your account's balance.
 //!
 //! | Module | |
 //! |---|---|
 //! | [`datadome`] | Tags, interstitial and slider payloads. |
 //! | [`cloudflare`] | Cloudflare challenge, Turnstile and JSD solves, as jobs through your proxy. |
 //! | [`recaptcha`] | reCAPTCHA v3 tokens, classic and Enterprise, as jobs through your proxy. |
+//! | [`kasada`] | Kasada `/tl` payloads from the ips.js your client fetched. |
 //! | [`account`] | The balance of your key's account. |
 //!
 //! Every client is built from your API key, is cheap to clone and is `Send + Sync`. Every call returns [`Result`], whose
@@ -36,6 +37,7 @@ pub mod cloudflare;
 pub mod datadome;
 mod http;
 mod jobs;
+pub mod kasada;
 pub mod recaptcha;
 
 pub use http::{Builder, DEFAULT_ENDPOINT};

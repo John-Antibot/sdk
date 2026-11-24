@@ -1,6 +1,6 @@
 # John Antibot TypeScript SDK
 
-TypeScript client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance. No dependencies: Node 18.17+ and Bun.
+TypeScript client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare, reCAPTCHA and Kasada APIs and your account's balance. No dependencies: Node 18.17+ and Bun.
 
 ```bash
 npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.2/john-antibot-sdk-0.8.2.tgz
@@ -11,9 +11,10 @@ npm install https://github.com/John-Antibot/sdk/releases/download/v0.8.2/john-an
 | `DataDome` | Generators for tags, interstitial and slider payloads. |
 | `Cloudflare` | Cloudflare challenge, JSD and Turnstile solves, as jobs on our side through your proxy. |
 | `Recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs on our side through your proxy. |
+| `Kasada` | Kasada `/tl` payloads from an ips.js your client fetched, and its `x-kpsdk-v` value from p.js. |
 | `Account` | The balance of your key's account. |
 
-Each client takes `{ apiKey, orgKey?, endpoint?, timeoutMs?, fetch? }`. Software you distribute under an organization also sets `orgKey` (sent as `x-org-key`) next to each user's own `apiKey`. `endpoint` is the API base URL, `https://antibot.johnavenue.com` by default. `timeoutMs` bounds one HTTP call (DataDome 60 s, Cloudflare and reCAPTCHA 40 s, Account 20 s). Every call takes a `signal` (an `AbortSignal`) in its input or options.
+Each client takes `{ apiKey, orgKey?, endpoint?, timeoutMs?, fetch? }`. Software you distribute under an organization also sets `orgKey` (sent as `x-org-key`) next to each user's own `apiKey`. `endpoint` is the API base URL, `https://antibot.johnavenue.com` by default. `timeoutMs` bounds one HTTP call (DataDome and Kasada 60 s, Cloudflare and reCAPTCHA 40 s, Account 20 s). Every call takes a `signal` (an `AbortSignal`) in its input or options.
 
 ## DataDome
 
@@ -161,6 +162,21 @@ Input: `url`, `siteKey`, `proxy`, `action?`, `timeoutMs?` (the job's time: from 
 
 The price is charged when the job is sent and returned if it fails. The checks are Cloudflare's: `isInsufficientBalance`, `isSiteNotApproved`, `isRateLimited`, `isBadRequest`, `isDeclined`.
 
+## Kasada
+
+Your client fetches the block or `/fp` page and its `ips.js`; we run that script and return the artifact for your client to post to `/tl` from the IP you name.
+
+```ts
+import { Kasada } from '@john-antibot/sdk'
+
+const kasada = new Kasada({ apiKey: process.env.JOHNANTIBOT_API_KEY })
+const res = await kasada.generatePayload({ script: ips, html: fpPage, pageUrl, userAgent, ip: exitIp, acceptLanguage: 'en-US,en;q=0.9' })
+// POST res.payload (bytes) to res.tlUrl with res.headers and res.userAgent, from exitIp.
+
+const version = await kasada.version({ script: pjs, pageUrl })
+// version.version is the x-kpsdk-v value for /fp.
+```
+
 ## Account
 
 Each paid call takes its price from your balance when it starts, and gets a `402` when the balance is less. `balance()` reads it first. It is free.
@@ -207,6 +223,8 @@ new Cloudflare(options)
   .job(id, { waitSeconds?, signal? }) → Job { id, state, task?, error?, retry?, result?, resultExpired?, createdAt?, startedAt?, finishedAt?, proxy? }
   .wait(job, { signal? }) → result
 new Recaptcha(options)
+new Kasada(options)
+  .generatePayload(input) / .version(input) → payload/version results
   .solveV3(input) / .solveV3Enterprise(input) → { token, expiresAt, userAgent, acceptLanguage, secUa?, secUaMobile?, secUaPlatform?, headers }
   .submitV3(input) / .submitV3Enterprise(input) → Job; .job(id, options?); .wait(job, options?)
 new Account(options).balance({ signal? }) → { metered, balanceMicros, balanceUsd }

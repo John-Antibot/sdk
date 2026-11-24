@@ -1,6 +1,6 @@
 # John Antibot Python SDK
 
-Python client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
+Python client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare, reCAPTCHA and Kasada APIs and your account's balance.
 
 ```bash
 pip install "git+https://github.com/John-Antibot/sdk.git@v0.8.2#subdirectory=python"
@@ -13,6 +13,7 @@ Python 3.9+. One dependency, `httpx`. Typed.
 | `DataDome` | Payloads for tags, the interstitial and the slider. |
 | `Cloudflare` | Challenge, JSD and Turnstile solves, as jobs on our side through your proxy. |
 | `Recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs on our side through your proxy. |
+| `Kasada` | Kasada `/tl` payloads from an ips.js your client fetched, and its `x-kpsdk-v` value from p.js. |
 | `Account` | The balance of your key's account. |
 
 Each client takes `api_key`, and optionally `endpoint` (default `https://antibot.johnavenue.com`), `timeout` (seconds per HTTP call) and `http_client` (your own `httpx.Client`). Each is a context manager. Software you distribute under an organization also passes `org_key` (sent as `x-org-key`) next to each user's own `api_key`.
@@ -172,6 +173,21 @@ Also `res.user_agent`, `res.accept_language`, `res.sec_ua`, `res.sec_ua_mobile`,
 
 The price is charged when the job is sent and returned if it fails. Checks: `is_insufficient_balance`, `is_site_not_approved`, `is_rate_limited`, `is_bad_request`, `is_declined`, as for Cloudflare.
 
+## Kasada
+
+Your client fetches the block or `/fp` page and its `ips.js`; we run that script and return the artifact for your client to post to `/tl` from the IP you name.
+
+```python
+from john_antibot import Kasada
+
+ks = Kasada(api_key=os.environ["JOHNANTIBOT_API_KEY"])
+res = ks.generate_payload(script=ips, html=fp_page, page_url=page_url, user_agent=user_agent, ip=exit_ip, accept_language="en-US,en;q=0.9")
+# POST res.payload (bytes) to res.tl_url with res.headers and res.user_agent, from exit_ip.
+
+version = ks.version(script=pjs, page_url=page_url)
+# version.version is the x-kpsdk-v value for /fp.
+```
+
 ## Account
 
 Each paid call takes its price from your balance when it starts, and gets a `402` when the balance is less. `balance()` reads it first. It is free.
@@ -211,7 +227,7 @@ async def main():
 asyncio.run(main())
 ```
 
-`AsyncDataDome`, `AsyncCloudflare`, `AsyncRecaptcha` and `AsyncAccount` have the same methods, awaited; `http_client` is an `httpx.AsyncClient`. `AsyncDataDome.session()` is not awaited. `asyncio.wait_for` or cancelling the task ends a wait.
+`AsyncDataDome`, `AsyncCloudflare`, `AsyncRecaptcha`, `AsyncKasada` and `AsyncAccount` have the same methods, awaited; `http_client` is an `httpx.AsyncClient`. `AsyncDataDome.session()` is not awaited. `asyncio.wait_for` or cancelling the task ends a wait.
 
 ## Examples
 

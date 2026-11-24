@@ -17,4 +17,5 @@ export type { ClientOptions, CallOptions, Job, JobState, JobOptions } from './ht
 export * from './datadome.ts'
 export * from './cloudflare.ts'
 export * from './recaptcha.ts'
+export * from './kasada.ts'
 export * from './account.ts'
