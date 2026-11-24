@@ -20,13 +20,13 @@ func main() {
 	htmlFile := flag.String("html", "", "the block or /fp page that named ips.js (or use -ips-link)")
 	ipsLink := flag.String("ips-link", "", "the ips.js path and query from that page (or use -html)")
 	pageURL := flag.String("url", "https://www.example.com/", "the block or /fp page URL")
-	userAgent := flag.String("user-agent", os.Getenv("KASADA_USER_AGENT"), "your client's user agent (or KASADA_USER_AGENT)")
+	userAgent := flag.String("user-agent", os.Getenv("KASADA_USER_AGENT"), "your client's user agent: Chrome 156, 157 or 158 on macOS (or KASADA_USER_AGENT); optional, the service picks one and the result names it")
 	ip := flag.String("ip", os.Getenv("KASADA_EXIT_IP"), "the IP the /tl request will be posted from (or KASADA_EXIT_IP)")
 	language := flag.String("accept-language", "en-US,en;q=0.9", "your client's Accept-Language")
 	api := flag.String("api", os.Getenv("KASADA_API"), "API base URL (or KASADA_API), default the hosted API")
 	flag.Parse()
-	if *scriptFile == "" || (*htmlFile == "" && *ipsLink == "") || *userAgent == "" || *ip == "" {
-		log.Fatal("FAIL -script, one of -html/-ips-link, -user-agent and -ip are required")
+	if *scriptFile == "" || (*htmlFile == "" && *ipsLink == "") || *ip == "" {
+		log.Fatal("FAIL -script, one of -html/-ips-link and -ip are required")
 	}
 	script, err := os.ReadFile(*scriptFile)
 	if err != nil {

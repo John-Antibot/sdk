@@ -5,9 +5,9 @@ Clients for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudfl
 | Language | Install | Docs |
 |---|---|---|
 | Go | `go get github.com/John-Antibot/sdk@latest` | below |
-| TypeScript | `npm install https://github.com/John-Antibot/sdk/releases/download/v0.9.0/john-antibot-sdk-0.9.0.tgz` | [typescript](typescript) |
-| Python | `pip install "git+https://github.com/John-Antibot/sdk.git@v0.9.0#subdirectory=python"` | [python](python) |
-| Rust | `cargo add john-antibot --git https://github.com/John-Antibot/sdk --tag v0.9.0` | [rust](rust) |
+| TypeScript | `npm install https://github.com/John-Antibot/sdk/releases/download/v0.9.1/john-antibot-sdk-0.9.1.tgz` | [typescript](typescript) |
+| Python | `pip install "git+https://github.com/John-Antibot/sdk.git@v0.9.1#subdirectory=python"` | [python](python) |
+| Rust | `cargo add john-antibot --git https://github.com/John-Antibot/sdk --tag v0.9.1` | [rust](rust) |
 
 # Go
 

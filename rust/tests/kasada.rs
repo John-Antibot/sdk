@@ -80,3 +80,19 @@ async fn version_sends_pjs_to_its_route() {
     assert_eq!(out.version, "j-1.2.1020");
     assert_eq!(m.last().path, "/v1/kasada/version");
 }
+
+#[tokio::test]
+async fn generate_payload_without_a_user_agent_sends_none() {
+    let m = serve(|_, _| {
+        reply(
+            200,
+            r#"{"payloadBase64":"AAEC","headers":{"x-kpsdk-ct":"ct"},"tlUrl":"https://www.example.com/tl","session":"s1","userAgent":"Chrome/158 picked"}"#,
+        )
+    })
+    .await;
+    let mut no_ua = input();
+    no_ua.user_agent = String::new();
+    let out = client(&m).generate_payload(no_ua).await.unwrap();
+    assert_eq!(out.user_agent, "Chrome/158 picked");
+    assert!(m.last().json().get("userAgent").is_none());
+}

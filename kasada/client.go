@@ -103,15 +103,18 @@ func (c *Client) GeneratePayload(ctx context.Context, in *PayloadInput) (*Payloa
 	if in == nil {
 		return nil, errors.New("kasada: input is nil")
 	}
-	if in.Script == "" || in.PageURL == "" || in.UserAgent == "" || in.IP == "" || in.AcceptLanguage == "" {
-		return nil, errors.New("kasada: a payload needs script, pageUrl, userAgent, ip and acceptLanguage")
+	if in.Script == "" || in.PageURL == "" || in.IP == "" || in.AcceptLanguage == "" {
+		return nil, errors.New("kasada: a payload needs script, pageUrl, ip and acceptLanguage")
 	}
 	if in.HTML == "" && in.IpsLink == "" {
 		return nil, errors.New("kasada: a payload needs html or ipsLink")
 	}
 	payload := map[string]any{
-		"script": in.Script, "pageUrl": in.PageURL, "userAgent": in.UserAgent,
+		"script": in.Script, "pageUrl": in.PageURL,
 		"ip": in.IP, "acceptLanguage": in.AcceptLanguage,
+	}
+	if in.UserAgent != "" {
+		payload["userAgent"] = in.UserAgent
 	}
 	if in.HTML != "" {
 		payload["html"] = in.HTML

@@ -82,3 +82,14 @@ test('version carries the cd parameters and makes x-kpsdk-cd locally', async () 
   const bare = await new Kasada({ endpoint: (await serve(() => ({ body: { version: 'j', payload: 'j', session: '', userAgent: '' } }))).url }).version({ script: 'pjs', pageUrl: 'https://example.com/' })
   assert.throws(() => bare.cdHeader(ct, st), /no cd parameters/)
 })
+
+test('generatePayload without a userAgent sends none and returns the one the service picked', async () => {
+  const srv = await serve(() => ({
+    body: { payloadBase64: 'AAEC', headers: { 'x-kpsdk-ct': 'ct' }, tlUrl: 'https://example.com/a/b/tl', session: 's1', userAgent: 'Chrome/158 picked' },
+  }))
+  const out = await new Kasada({ endpoint: srv.url }).generatePayload({
+    script: 'ips', ipsLink: '/a/b/ips.js', pageUrl: 'https://example.com/', ip: '203.0.113.1', acceptLanguage: 'en-US',
+  })
+  assert.equal(out.userAgent, 'Chrome/158 picked')
+  assert.equal('userAgent' in srv.seen[0].body, false)
+})
