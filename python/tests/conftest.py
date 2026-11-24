@@ -102,7 +102,7 @@ class Blocking:
         setattr(self._target, name, value)
 
 
-ASYNC = {ja.DataDome: ja.AsyncDataDome, ja.Cloudflare: ja.AsyncCloudflare, ja.Recaptcha: ja.AsyncRecaptcha, ja.Account: ja.AsyncAccount}
+ASYNC = {ja.DataDome: ja.AsyncDataDome, ja.Cloudflare: ja.AsyncCloudflare, ja.Recaptcha: ja.AsyncRecaptcha, ja.Kasada: ja.AsyncKasada, ja.Account: ja.AsyncAccount}
 
 
 @pytest.fixture(params=["sync", "async"])

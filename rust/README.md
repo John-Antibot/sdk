@@ -1,6 +1,6 @@
 # John Antibot Rust SDK
 
-Rust client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
+Rust client for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare, reCAPTCHA and Kasada APIs and your account's balance.
 
 ```toml
 [dependencies]
@@ -15,6 +15,7 @@ Async on tokio, TLS by rustls. Rust 1.88 or later.
 | `datadome` | Tags, interstitial and slider payloads. |
 | `cloudflare` | Cloudflare challenge, Turnstile and JSD solves, as jobs through your proxy. |
 | `recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs through your proxy. |
+| `kasada` | Kasada `/tl` payloads from an ips.js your client fetched, and its `x-kpsdk-v` value from p.js. |
 | `account` | The balance of your key's account. |
 
 Each module has a `Client`: `Client::new(&key)`, or `Client::builder(&key)` with `.org_key(..)`, `.endpoint(..)` (the API root, default `https://antibot.johnavenue.com`), `.timeout(..)` (one HTTP call) and `.http_client(reqwest::Client)`, then `.build()?`. A client is cheap to clone and `Send + Sync`. Inputs are structs: set what you need and end with `..Default::default()`.
@@ -191,6 +192,25 @@ The price is charged when the job is sent and returned if it fails.
 | `err.is_rate_limited()` | `429`: wait, then try again. |
 | `err.is_bad_request()` | The input was refused: the proxy, the site key, a field. |
 | `err.is_declined()` | The attempt was turned down and not charged. Send another. |
+
+## Kasada
+
+Your client fetches the block or `/fp` page and its `ips.js`; we run that script and return the artifact for your client to post to `/tl` from the IP you name.
+
+```rust
+use john_antibot::kasada;
+
+let ks = kasada::Client::new(&key);
+let res = ks.generate_payload(kasada::PayloadInput {
+    script: ips, page_url: page_url, user_agent: user_agent,
+    ip: exit_ip, accept_language: "en-US,en;q=0.9".into(),
+    ..Default::default()
+}).await?;
+// POST res.payload (bytes) to res.tl_url with res.headers and res.user_agent, from exit_ip.
+
+let version = ks.version(kasada::VersionInput { script: pjs, page_url, ..Default::default() }).await?;
+// version.version is the x-kpsdk-v value for /fp.
+```
 
 ## Account
 

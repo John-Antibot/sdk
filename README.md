@@ -1,6 +1,6 @@
 # John Antibot SDKs
 
-Clients for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare and reCAPTCHA APIs and your account's balance.
+Clients for the [John Antibot](https://antibot.johnavenue.com) DataDome, Cloudflare, reCAPTCHA and Kasada APIs and your account's balance.
 
 | Language | Install | Docs |
 |---|---|---|
@@ -18,6 +18,7 @@ Moved from `github.com/John-Avenue/john-antibot-sdk` in v0.6.0: change the impor
 | `datadome` | Generators for tags, interstitial and slider payloads. |
 | `cloudflare` | Cloudflare challenge, Turnstile and JSD solves, as jobs on our side through your proxy. |
 | `recaptcha` | reCAPTCHA v3 tokens, classic and Enterprise, as jobs on our side through your proxy. |
+| `kasada` | Kasada `/tl` payloads from an ips.js your client fetched, and its `x-kpsdk-v` value from p.js. |
 | `account` | The balance of your key's account. |
 | `flow` | Complete DataDome flows over your own HTTP transport. |
 | `examples` | Runnable programs for each of the above. |
@@ -162,6 +163,22 @@ The price is charged when the job is sent and returned if it fails. A job that e
 | `IsBadRequest` | The input was refused: the proxy, the site key, a field. |
 | `IsDeclined` | The API turned the attempt down and did not charge it. Send another. |
 
+## Kasada
+
+You fetch the block or `/fp` page and its `ips.js`; we run that script as a collected browser and return the `/tl` artifact for your client to post from the IP you name.
+
+```go
+ks, _ := kasada.New(kasada.Config{APIKey: os.Getenv("JOHNANTIBOT_API_KEY")})
+res, err := ks.GeneratePayload(ctx, &kasada.PayloadInput{
+    Script: ips, HTML: fpPage, PageURL: pageURL,
+    UserAgent: userAgent, IP: exitIP, AcceptLanguage: "en-US,en;q=0.9",
+})
+// POST res.Payload to res.TlURL with res.Headers and res.UserAgent, from exitIP.
+
+version, err := ks.Version(ctx, &kasada.VersionInput{Script: pjs, PageURL: pageURL})
+// version.Version is the x-kpsdk-v value for /fp.
+```
+
 ## Account
 
 Each paid call takes its price from your balance when it starts, and gets a `402` when the balance is less. `Balance` reads it first. It is free.
@@ -194,6 +211,7 @@ go run ./datadome_interstitial -transport httpcloak -proxy http://user:pass@host
 | `cloudflare_challenge` | Loads a page (403), clears it through the proxy, loads it again with the clearance and the user agent of the result. |
 | `cloudflare_turnstile` | Solves a widget and prints the token. |
 | `recaptcha_v3` | Makes a reCAPTCHA v3 token (`-enterprise` for Enterprise pages) and prints it with the headers of the browser it was made as. |
+| `kasada_payload` | Makes a Kasada payload from a saved ips.js and page, and prints the `/tl` URL and headers to post it with. |
 | `account_balance` | Prints the balance of your key's account in dollars. |
 | `datadome_tags` | Loads a page and posts the `ch` and `le` tags. |
 | `datadome_interstitial` | Solves the interstitial and reloads the page. |

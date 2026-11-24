@@ -1,10 +1,11 @@
-"""Python client for the John Antibot DataDome, Cloudflare and reCAPTCHA APIs and your account's balance."""
+"""Python client for the John Antibot DataDome, Cloudflare, reCAPTCHA and Kasada APIs and your account's balance."""
 
 from ._http import DEFAULT_ENDPOINT
 from .account import Account, AsyncAccount
 from .cloudflare import AsyncCloudflare, Cloudflare
 from .datadome import AsyncDataDome, DataDome
 from .recaptcha import AsyncRecaptcha, Recaptcha
+from .kasada import AsyncKasada, Kasada
 from .errors import (
     ApiError,
     JobError,
@@ -31,11 +32,13 @@ __all__ = [
     "AsyncCloudflare",
     "AsyncDataDome",
     "AsyncRecaptcha",
+    "AsyncKasada",
     "Cloudflare",
     "DataDome",
     "JobError",
     "JohnAntibotError",
     "Recaptcha",
+    "Kasada",
     "is_bad_key",
     "is_bad_request",
     "is_declined",
