@@ -81,3 +81,17 @@ def test_cd_header_and_version_parse(make):
         pass
     else:
         raise AssertionError("a version without cd parameters made a header")
+
+
+def test_generate_payload_without_user_agent(make):
+    api = API({
+        "POST /v1/kasada/payload": {
+            "payloadBase64": "AAEC", "headers": {"x-kpsdk-ct": "ct"},
+            "tlUrl": "https://example.com/tl", "session": "s1", "userAgent": "Chrome/158 picked",
+        }
+    })
+    out = make(ja.Kasada, api).generate_payload(
+        script="ips", ips_link="/a/b/ips.js", page_url="https://example.com/", ip="203.0.113.1", accept_language="en-US",
+    )
+    assert out.user_agent == "Chrome/158 picked"
+    assert "userAgent" not in api.seen[0].body

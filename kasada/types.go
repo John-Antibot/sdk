@@ -20,8 +20,11 @@ type PayloadInput struct {
 	IpsLink string
 	// PageURL is the URL of the block/fp page.
 	PageURL string
-	// UserAgent is the browser fetching and posting as. The result's
-	// UserAgent is the collected device actually used.
+	// UserAgent is the browser fetching and posting as: Chrome 156, 157 or
+	// 158 on macOS. Optional: left out, the service picks one of them and
+	// the result's UserAgent says which; use it for every request of the
+	// session. Either way the result's UserAgent is the collected device
+	// actually used.
 	UserAgent string
 	// IP is the address the /tl request will be posted from.
 	IP string

@@ -61,7 +61,8 @@ pub struct PayloadInput {
     pub ips_link: Option<String>,
     /// The URL of the block or `/fp` page. The site must be approved for your key.
     pub page_url: String,
-    /// The browser fetching and posting as.
+    /// Chrome 156, 157 or 158 on macOS. Optional: left empty, the service picks one of them and the result's `user_agent` says
+    /// which; use it for every request of the session.
     pub user_agent: String,
     /// The address the resulting `/tl` request will be posted from.
     pub ip: String,
@@ -330,14 +331,13 @@ impl Client {
     pub async fn generate_payload(&self, input: PayloadInput) -> Result<PayloadResult> {
         if input.script.is_empty()
             || input.page_url.is_empty()
-            || input.user_agent.is_empty()
             || input.ip.is_empty()
             || input.accept_language.is_empty()
             || (input.html.as_deref().unwrap_or_default().is_empty()
                 && input.ips_link.as_deref().unwrap_or_default().is_empty())
         {
             return Err(Error::Input(
-                "kasada: a payload needs script, html or ips_link, page_url, user_agent, ip and accept_language".into(),
+                "kasada: a payload needs script, html or ips_link, page_url, ip and accept_language".into(),
             ));
         }
         let mut body = Map::new();
@@ -345,7 +345,11 @@ impl Client {
         put(&mut body, "html", input.html.as_deref());
         put(&mut body, "ipsLink", input.ips_link.as_deref());
         put(&mut body, "pageUrl", Some(&input.page_url));
-        put(&mut body, "userAgent", Some(&input.user_agent));
+        put(
+            &mut body,
+            "userAgent",
+            Some(input.user_agent.as_str()).filter(|u| !u.is_empty()),
+        );
         put(&mut body, "ip", Some(&input.ip));
         put(&mut body, "acceptLanguage", Some(&input.accept_language));
         put(&mut body, "session", input.session.as_deref());

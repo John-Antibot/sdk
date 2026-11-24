@@ -11,7 +11,11 @@ export interface KasadaPayloadInput extends CallOptions {
   ipsLink?: string
   /** The URL of the block or /fp page. The site must be approved for your key. */
   pageUrl: string
-  userAgent: string
+  /**
+   * Chrome 156, 157 or 158 on macOS. Optional: left out, the service picks one of them and the result's `userAgent` says which; use it for
+   * every request of the session.
+   */
+  userAgent?: string
   /** The address the resulting /tl request will be posted from. */
   ip: string
   acceptLanguage: string
@@ -144,8 +148,8 @@ export class Kasada {
 
   async generatePayload(input: KasadaPayloadInput): Promise<KasadaPayloadResult> {
     const { script, html, ipsLink, pageUrl, userAgent, ip, acceptLanguage, session, signal } = input ?? ({} as never)
-    if (!script || !pageUrl || !userAgent || !ip || !acceptLanguage || (!html && !ipsLink)) {
-      throw new Error('kasada: a payload needs script, html or ipsLink, pageUrl, userAgent, ip and acceptLanguage')
+    if (!script || !pageUrl || !ip || !acceptLanguage || (!html && !ipsLink)) {
+      throw new Error('kasada: a payload needs script, html or ipsLink, pageUrl, ip and acceptLanguage')
     }
     const raw = await this.#http.call<Wire>('POST', '/v1/kasada/payload', {
       script, html, ipsLink, pageUrl, userAgent, ip, acceptLanguage, session,

@@ -122,22 +122,23 @@ def _body(
     *,
     script: str,
     page_url: str,
-    user_agent: str,
     ip: str,
     accept_language: str,
+    user_agent: str = "",
     html: str = "",
     ips_link: str = "",
     session: str = "",
 ) -> Dict[str, Any]:
-    if not script or not page_url or not user_agent or not ip or not accept_language or not (html or ips_link):
-        raise ValueError("kasada: a payload needs script, html or ips_link, page_url, user_agent, ip and accept_language")
+    if not script or not page_url or not ip or not accept_language or not (html or ips_link):
+        raise ValueError("kasada: a payload needs script, html or ips_link, page_url, ip and accept_language")
     body: Dict[str, Any] = {
         "script": script,
         "pageUrl": page_url,
-        "userAgent": user_agent,
         "ip": ip,
         "acceptLanguage": accept_language,
     }
+    if user_agent:
+        body["userAgent"] = user_agent
     if html:
         body["html"] = html
     if ips_link:
@@ -225,7 +226,7 @@ class Kasada(_Sync):
         *,
         script: str,
         page_url: str,
-        user_agent: str,
+        user_agent: str = "",
         ip: str,
         accept_language: str,
         html: str = "",
@@ -270,7 +271,7 @@ class AsyncKasada(_Async):
         *,
         script: str,
         page_url: str,
-        user_agent: str,
+        user_agent: str = "",
         ip: str,
         accept_language: str,
         html: str = "",

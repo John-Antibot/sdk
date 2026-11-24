@@ -147,3 +147,25 @@ func TestVersionReadsCDParams(t *testing.T) {
 		t.Fatalf("cd = %+v", out.CD)
 	}
 }
+
+func TestGeneratePayloadWithoutUserAgent(t *testing.T) {
+	var seenBody map[string]any
+	client, _ := New(Config{HTTPClient: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		data, _ := io.ReadAll(req.Body)
+		_ = json.Unmarshal(data, &seenBody)
+		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(
+			`{"payloadBase64":"AAEC","headers":{"x-kpsdk-ct":"ct"},"tlUrl":"https://example.com/tl","session":"s1","userAgent":"Chrome 158 as the service picked it"}`))}, nil
+	})})
+	out, err := client.GeneratePayload(context.Background(), &PayloadInput{
+		Script: "ips", IpsLink: "/a/b/ips.js", PageURL: "https://example.com/", IP: "203.0.113.1", AcceptLanguage: "en-US",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, sent := seenBody["userAgent"]; sent {
+		t.Fatalf("an empty userAgent was sent: %v", seenBody)
+	}
+	if out.UserAgent != "Chrome 158 as the service picked it" {
+		t.Fatalf("result = %+v", out)
+	}
+}
