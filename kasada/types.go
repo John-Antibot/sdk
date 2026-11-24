@@ -46,12 +46,15 @@ type VersionInput struct {
 	Session string
 }
 
-// VersionResult is the x-kpsdk-v value p.js stamps on /fp.
+// VersionResult is the x-kpsdk-v value p.js stamps on /fp, and what
+// x-kpsdk-cd is made from (see CDHeader).
 type VersionResult struct {
-	Version   string `json:"version"`
-	Payload   string `json:"payload"`
-	Session   string `json:"session"`
-	UserAgent string `json:"userAgent"`
+	Version string `json:"version"`
+	Payload string `json:"payload"`
+	// CD is nil when p.js's proof of work could not be read.
+	CD        *CDParams `json:"cd,omitempty"`
+	Session   string    `json:"session"`
+	UserAgent string    `json:"userAgent"`
 }
 
 // PayloadResult is the artifact ready for the caller's /tl POST.
